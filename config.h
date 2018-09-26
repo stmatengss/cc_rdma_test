@@ -72,10 +72,10 @@
 /***********************************************/
 // Message Passing
 /***********************************************/
-#define TPORT_TYPE TCP
-#define TPORT_PORT 17000
-#define SET_AFFINITY true
-#define TPORT_TYPE TCP
+// #define TPORT_TYPE TCP
+// #define TPORT_PORT 17000
+// #define SET_AFFINITY true
+#define TPORT_TYPE IPC
 #define TPORT_PORT 17000
 #define SET_AFFINITY true
 
@@ -351,7 +351,7 @@ enum PPSTxnType {PPS_ALL = 0,
 
 #define SEED 0
 #define SHMEM_ENV false
-#define ENVIRONMENT_EC2 true
+#define ENVIRONMENT_EC2 false
 
 #endif
 

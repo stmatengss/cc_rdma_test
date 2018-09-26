@@ -2,18 +2,20 @@ CC=g++
 CFLAGS=-Wall -g -gdwarf-3 -std=c++0x 
 #CFLAGS += -fsanitize=address -fno-omit-frame-pointer 
 JEMALLOC=./jemalloc-4.0.3
-NNMSG=./nanomsg-0.5-beta
+#NNMSG=./nanomsg-0.5-beta
+NNMSG=./usr/local/lib
 
 .SUFFIXES: .o .cpp .h
 
 SRC_DIRS = ./ ./benchmarks/ ./client/ ./concurrency_control/ ./storage/ ./transport/ ./system/ ./statistics/#./unit_tests/
-DEPS = -I. -I./benchmarks -I./client/ -I./concurrency_control -I./storage -I./transport -I./system -I./statistics -I$(JEMALLOC)/include #-I./unit_tests 
+DEPS = -I. -I./benchmarks -I./client/ -I./concurrency_control -I./storage -I./transport -I./system -I./statistics -I$(JEMALLOC)/include -I./usr/local/include/nanomsg #-I./unit_tests 
 
-CFLAGS += $(DEPS) -D NOGRAPHITE=1 -Werror -Wno-sizeof-pointer-memaccess
+CFLAGS += $(DEPS) -D NOGRAPHITE=1 -Werror -lnanomsg -Wno-sizeof-pointer-memaccess
 LDFLAGS = -Wall -L. -L$(NNMSG) -L$(JEMALLOC)/lib -Wl,-rpath,$(JEMALLOC)/lib -pthread -gdwarf-3 -lrt -std=c++0x
 #LDFLAGS = -Wall -L. -L$(NNMSG) -L$(JEMALLOC)/lib -Wl,-rpath,$(JEMALLOC)/lib -pthread -gdwarf-3 -lrt -std=c++11
 LDFLAGS += $(CFLAGS)
-LIBS = -lnanomsg -lanl -ljemalloc 
+#LIBS = -lnanomsg -lanl -ljemalloc 
+LIBS = -lanl -ljemalloc 
 
 DB_MAINS = ./client/client_main.cpp ./system/sequencer_main.cpp ./unit_tests/unit_main.cpp
 CL_MAINS = ./system/main.cpp ./system/sequencer_main.cpp ./unit_tests/unit_main.cpp
@@ -63,11 +65,11 @@ unit_test :  $(OBJS_UNIT)
 
 
 rundb : $(OBJS_DB)
-	$(CC) -static -o $@ $^ $(LDFLAGS) $(LIBS)
-#	$(CC) -o $@ $^ $(LDFLAGS) $(LIBS)
+#	$(CC) -static -o $@ $^ $(LDFLAGS) $(LIBS)
+	$(CC) -o $@ $^ $(LDFLAGS) $(LIBS)
 ./obj/%.o: transport/%.cpp
-	$(CC) -static -c $(CFLAGS) $(INCLUDE) $(LIBS) -o $@ $<
-#	$(CC) -c $(CFLAGS) $(INCLUDE) $(LIBS) -o $@ $<
+#	$(CC) -static -c $(CFLAGS) $(INCLUDE) $(LIBS) -o $@ $<
+	$(CC) -c $(CFLAGS) $(INCLUDE) $(LIBS) -o $@ $<
 #./deps/%.d: %.cpp
 #	$(CC) -MM -MT $*.o -MF $@ $(CFLAGS) $<
 ./obj/%.o: benchmarks/%.cpp
@@ -87,11 +89,11 @@ rundb : $(OBJS_DB)
 
 
 runcl : $(OBJS_CL)
-	$(CC) -static -o $@ $^ $(LDFLAGS) $(LIBS)
-#	$(CC) -o $@ $^ $(LDFLAGS) $(LIBS)
+#	$(CC) -static -o $@ $^ $(LDFLAGS) $(LIBS)
+	$(CC) -o $@ $^ $(LDFLAGS) $(LIBS)
 ./obj/%.o: transport/%.cpp
-	$(CC) -static -c $(CFLAGS) $(INCLUDE) $(LIBS) -o $@ $<
-#	$(CC) -c $(CFLAGS) $(INCLUDE) $(LIBS) -o $@ $<
+#	$(CC) -static -c $(CFLAGS) $(INCLUDE) $(LIBS) -o $@ $<
+	$(CC) -c $(CFLAGS) $(INCLUDE) $(LIBS) -o $@ $<
 #./deps/%.d: %.cpp
 #	$(CC) -MM -MT $*.o -MF $@ $(CFLAGS) $<
 ./obj/%.o: benchmarks/%.cpp

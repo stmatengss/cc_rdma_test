@@ -27,7 +27,7 @@
 #include <nanomsg/tcp.h>
 
 #include <cassert>
-#include <cstring> 
+#include <cstring>
 #include <algorithm>
 #include <exception>
 
