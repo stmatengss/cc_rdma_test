@@ -21,9 +21,9 @@
   #include "nn.hpp"
 #else
   #include "nn_back.hpp"
+  #include <nanomsg/bus.h>
+  #include <nanomsg/pair.h>
 #endif
-#include <nanomsg/bus.h>
-#include <nanomsg/pair.h>
 #include "query.h"
 
 class Workload;
@@ -41,7 +41,11 @@ Data:	MSG_SIZE - HDR_SIZE bytes
 
 class Socket {
 	public:
+#ifdef USE_RDMA
+    Socket () : sock() {}
+#else
 		Socket () : sock(AF_SP,NN_PAIR) {}
+#endif
 		~Socket () { delete &sock;}
         char _pad1[CL_SIZE];
 		nn::socket sock;

@@ -28,6 +28,7 @@
 
 /* RDMA communication */
 extern "C"{
+    #pragma message ( "==== USE RDMA ====" )
 #include <libmrdma.h>
 }
 
@@ -44,57 +45,16 @@ extern "C"{
 
 namespace nn
 {
-
-    class exception : public std::exception
-    {
-    public:
-
-        exception () : err (nn_errno ()) {}
-
-        virtual const char *what () const throw ()
-        {
-            return nn_strerror (err);
-        }
-
-        int num () const
-        {
-            return err;
-        }
-
-    private:
-
-        int err;
-    };
-
-    inline const char *symbol (int i, int *value)
-    {
-        return nn_symbol (i, value);
-    }
-
-    inline void *allocmsg (size_t size, int type)
-    {
-        void *msg = nn_allocmsg (size, type);
-        if (nn_slow (!msg))
-            throw nn::exception ();
-        return msg;
-    }
-
-    inline int freemsg (void *msg)
-    {
-        int rc = nn_freemsg (msg);
-        if (nn_slow (rc != 0))
-            throw nn::exception ();
-        return rc;
-    }
-
     class socket
     {
     public:
 
-        inline socket (int domain, int protocol)
+        inline socket ()
         {
             // First Step, 7000 will be changed soon
             // In this version, the qp number is only 1
+            FILL(ibv_res);
+
             m_init_parameter(&ibv_res, 1, 7000, 0xdeadbeaf, M_RC, 1);
 
             m_open_device_and_alloc_pd(&ibv_res);
@@ -116,6 +76,11 @@ namespace nn
             // assert (rc == 0);
         }
 
+        inline void *get_send_buffer_addr() 
+        {
+            return (void *)rdma_send_buffer;
+        }
+
         inline void setsockopt (int level, int option, const void *optval,
             size_t optvallen)
         {
@@ -125,6 +90,7 @@ namespace nn
         inline int bind (const char *addr, uint64_t port)
         {
             ibv_res.port = port;
+            ibv_res.is_server = 1;
             m_sync(&ibv_res, "", rdma_buffer);
 
             m_modify_qp_to_rts_and_rtr(&ibv_res);
@@ -135,6 +101,7 @@ namespace nn
         inline int connect (const char *addr, uint64_t port)
         {
             ibv_res.port = port;
+            ibv_res.is_server = 0;
             m_sync(&ibv_res, addr, rdma_buffer);
 
             m_modify_qp_to_rts_and_rtr(&ibv_res);
@@ -142,36 +109,21 @@ namespace nn
             return 0;
         }
 
-        inline void shutdown (int how)
-        {
-            int rc = nn_shutdown (s, how);
-            if (nn_slow (rc != 0))
-                throw nn::exception ();
-        }
-
         inline int send (const void *buf, size_t len, int flags)
         {
-            int rc = nn_send (s, buf, len, flags);
-            if (nn_slow (rc < 0)) {
-                if (nn_slow (nn_errno () != EAGAIN))
-                    throw nn::exception ();
-                return -1;
-            }
-            return rc;
+            m_post_write_offset_sig_imm(&ibv_res, rdma_send_buffer, len, 0, (uint64_t)len, 0);
+            m_poll_send_cq(&ibv_res, 0);
+            return 0;
         }
 
         inline int recv (void *buf, size_t len, int flags)
         {
-            int rc = nn_recv (s, buf, len, flags);
-            if (nn_slow (rc < 0)) {
-                if (nn_slow (nn_errno () != EAGAIN))
-                    throw nn::exception ();
-                return -1;
-            }
-            return rc;
+            // int rc = nn_recv (s, buf, len, flags);
+            buf = rdma_recv_buffer;
+            return  static_cast<int>(m_poll_recv_cq_with_data(&ibv_res, 0));
         }
 
-        inline int sendmsg (const struct nn_msghdr *msghdr, int flags)
+/*        inline int sendmsg (const struct nn_msghdr *msghdr, int flags)
         {
             int rc = nn_sendmsg (s, msghdr, flags);
             if (nn_slow (rc < 0)) {
@@ -191,7 +143,7 @@ namespace nn
                 return -1;
             }
             return rc;
-        }
+        }*/
 
     private:
 
@@ -205,11 +157,6 @@ namespace nn
         socket (const socket&);
         void operator = (const socket&);
     };
-
-    inline void term ()
-    {
-        nn_term ();
-    }
 
 }
 

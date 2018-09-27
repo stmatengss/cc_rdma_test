@@ -238,11 +238,15 @@ void Transport::init() {
 void Transport::send_msg(uint64_t send_thread_id, uint64_t dest_node_id, void * sbuf,int size) {
   uint64_t starttime = get_sys_clock();
 
-  REDLOG("[Size]%d\n", size);
+  REDLOG("[Send_Size]%d\n", size);
 
   Socket * socket = send_sockets.find(std::make_pair(dest_node_id,send_thread_id))->second;
   // Copy messages to nanomsg buffer
-	void * buf = nn_allocmsg(size,0);
+#ifdef USE_RDMA
+  void * buf = socket->sock.get_send_buffer_addr();
+#else
+	void * buf = nn::allocmsg(size,0);
+#endif
 	memcpy(buf,sbuf,size);
   DEBUG("%ld Sending batch of %d bytes to node %ld on socket %ld\n",send_thread_id,size,dest_node_id,(uint64_t)socket);
 
@@ -283,6 +287,9 @@ std::vector<Message*> * Transport::recv_msg(uint64_t thd_id) {
     Socket * socket = recv_sockets[ctr];
 		bytes = socket->sock.recv(&buf, NN_MSG, NN_DONTWAIT);
 
+#ifdef USE_RDMA
+    GREENLOG("[Recv_Size]%d\n", bytes);
+#endif
     //++ctr;
     ctr = (ctr + g_this_rem_thread_cnt);
 
@@ -293,7 +300,11 @@ std::vector<Message*> * Transport::recv_msg(uint64_t thd_id) {
 
 		if(bytes <= 0 && errno != 11) {
 		  printf("Recv Error %d %s\n",errno,strerror(errno));
+#ifdef USE_RDMA
+      // Do nothing
+#else
 			nn::freemsg(buf);	
+#endif
 		}
 
 		if(bytes>0)
@@ -313,8 +324,12 @@ std::vector<Message*> * Transport::recv_msg(uint64_t thd_id) {
   msgs = Message::create_messages((char*)buf);
   DEBUG("Batch of %d bytes recv from node %ld; Time: %f\n",bytes,msgs->front()->return_node_id,simulation->seconds_from_start(get_sys_clock()));
 
-	nn::freemsg(buf);	
-
+#ifdef USE_RDMA
+      // Do nothing
+#else
+  nn::freemsg(buf); 
+#endif
+  
 	INC_STATS(thd_id,msg_unpack_time,get_sys_clock()-starttime);
   return msgs;
 }

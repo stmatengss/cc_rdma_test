@@ -355,8 +355,8 @@ enum PPSTxnType {PPS_ALL = 0,
 #define SEQ_BATCH_TIMER 5 * 1 * MILLION // ~5ms -- same as CALVIN paper
 // #define DONE_TIMER 1 * 60 * BILLION // ~1 minutes @mateng
 // #define WARMUP_TIMER 1 * 60 * BILLION // ~1 minutes @mateng
-#define DONE_TIMER 100000 // ~1 minutes @mateng
-#define WARMUP_TIMER 100000 // ~1 minutes @mateng
+#define DONE_TIMER 1000000 // ~1 minutes @mateng
+#define WARMUP_TIMER 1000000 // ~1 minutes @mateng
 
 #define SEED 0
 #define SHMEM_ENV false
