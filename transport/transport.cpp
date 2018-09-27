@@ -17,7 +17,11 @@
 #include "global.h"
 #include "manager.h"
 #include "transport.h"
-#include "nn.hpp"
+#ifdef USE_RDMA
+  #include "nn.hpp"
+#else
+  #include "nn_back.hpp"
+#endif
 #include "tpcc_query.h"
 #include "query.h"
 #include "message.h"
@@ -139,7 +143,11 @@ Socket * Transport::bind(uint64_t port_id) {
 #endif
 #endif
   printf("Sock Binding to %s %d\n",socket_name,g_node_id);
+#ifdef USE_RDMA
+  int rc = socket->sock.bind(ifaddr[g_node_id], port_id);
+#else
   int rc = socket->sock.bind(socket_name);
+#endif
   printf("Sock Binding to %s %d End\n",socket_name,g_node_id);
   if(rc < 0) {
     printf("Bind Error: %d %s\n",errno,strerror(errno));
@@ -161,7 +169,11 @@ Socket * Transport::connect(uint64_t dest_id,uint64_t port_id) {
 #endif
 #endif
   printf("Sock Connecting to %s %d -> %ld\n",socket_name,g_node_id,dest_id);
+#ifdef USE_RDMA
+  int rc = socket->sock.connect(ifaddr[g_node_id], port_id);
+#else
   int rc = socket->sock.connect(socket_name);
+#endif
   printf("Sock Connecting to %s %d -> %ld End\n",socket_name,g_node_id,dest_id);
   if(rc < 0) {
     printf("Connect Error: %d %s\n",errno,strerror(errno));
@@ -225,6 +237,8 @@ void Transport::init() {
 // rename sid to send thread id
 void Transport::send_msg(uint64_t send_thread_id, uint64_t dest_node_id, void * sbuf,int size) {
   uint64_t starttime = get_sys_clock();
+
+  REDLOG("[Size]%d\n", size);
 
   Socket * socket = send_sockets.find(std::make_pair(dest_node_id,send_thread_id))->second;
   // Copy messages to nanomsg buffer

@@ -17,7 +17,11 @@
 #ifndef _TRANSPORT_H_
 #define _TRANSPORT_H_
 #include "global.h"
-#include "nn.hpp"
+#ifdef USE_RDMA
+  #include "nn.hpp"
+#else
+  #include "nn_back.hpp"
+#endif
 #include <nanomsg/bus.h>
 #include <nanomsg/pair.h>
 #include "query.h"
@@ -41,14 +45,14 @@ class Socket {
 		~Socket () { delete &sock;}
         char _pad1[CL_SIZE];
 		nn::socket sock;
-        char _pad[CL_SIZE - sizeof(nn::socket)];
+        // char _pad[CL_SIZE - sizeof(nn::socket)]; // @mateng What's this?
 };
 
 class Transport {
 	public:
 		void read_ifconfig(const char * ifaddr_file);
 		void init();
-    void shutdown(); 
+    // void shutdown(); 
     uint64_t get_socket_count(); 
     string get_path(); 
     Socket * get_socket(); 

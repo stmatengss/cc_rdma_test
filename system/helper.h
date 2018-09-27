@@ -22,6 +22,10 @@
 #include <stdint.h>
 #include "global.h"
 
+
+void GREENLOG(const char *format, ...);
+void REDLOG(const char *format, ...);
+
 /************************************************/
 // Debugging
 /************************************************/

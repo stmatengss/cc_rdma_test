@@ -3,6 +3,13 @@
 #define _CONFIG_H_
 
 /***********************************************/
+// RDMA configuration
+/***********************************************/
+// #define USE_RDMA
+#define RDMA_BUFFER_SIZE (1<<20)
+#define RDMA_CYC_QP_NUM (1<<10)
+
+/***********************************************/
 // Simulation + Hardware
 /***********************************************/
 #define NODE_CNT 2
@@ -346,8 +353,10 @@ enum PPSTxnType {PPS_ALL = 0,
 #define PROG_TIMER 10 * BILLION // in s
 #define BATCH_TIMER 0
 #define SEQ_BATCH_TIMER 5 * 1 * MILLION // ~5ms -- same as CALVIN paper
-#define DONE_TIMER 1 * 60 * BILLION // ~1 minutes
-#define WARMUP_TIMER 1 * 60 * BILLION // ~1 minutes
+// #define DONE_TIMER 1 * 60 * BILLION // ~1 minutes @mateng
+// #define WARMUP_TIMER 1 * 60 * BILLION // ~1 minutes @mateng
+#define DONE_TIMER 100000 // ~1 minutes @mateng
+#define WARMUP_TIMER 100000 // ~1 minutes @mateng
 
 #define SEED 0
 #define SHMEM_ENV false

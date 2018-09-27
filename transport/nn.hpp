@@ -26,6 +26,11 @@
 #include <nanomsg/nn.h>
 #include <nanomsg/tcp.h>
 
+/* RDMA communication */
+extern "C"{
+#include <libmrdma.h>
+}
+
 #include <cassert>
 #include <cstring> 
 #include <algorithm>
@@ -88,47 +93,53 @@ namespace nn
 
         inline socket (int domain, int protocol)
         {
-            s = nn_socket (domain, protocol);
-            if (nn_slow (s < 0))
-                throw nn::exception ();
+            // First Step, 7000 will be changed soon
+            // In this version, the qp number is only 1
+            m_init_parameter(&ibv_res, 1, 7000, 0xdeadbeaf, M_RC, 1);
+
+            m_open_device_and_alloc_pd(&ibv_res);
+
+            rdma_buffer = new char[RDMA_BUFFER_SIZE];
+            rdma_send_buffer = rdma_buffer;
+            rdma_recv_buffer = rdma_buffer + RDMA_BUFFER_SIZE / 2;
+
+            m_reg_buffer(&ibv_res, rdma_buffer, RDMA_BUFFER_SIZE);
+
+            m_create_cq_and_qp(&ibv_res, RDMA_CYC_QP_NUM, IBV_QPT_RC);
+
         }
 
         inline ~socket ()
         {
-            int rc = nn_close (s);
-            assert (rc == 0);
+            // TODO
+            // int rc = nn_close (s);
+            // assert (rc == 0);
         }
 
         inline void setsockopt (int level, int option, const void *optval,
             size_t optvallen)
         {
-            int rc = nn_setsockopt (s, level, option, optval, optvallen);
-            if (nn_slow (rc != 0))
-                throw nn::exception ();
+            // @mateng do nothing is OK
         }
 
-        inline void getsockopt (int level, int option, void *optval,
-            size_t *optvallen)
+        inline int bind (const char *addr, uint64_t port)
         {
-            int rc = nn_getsockopt (s, level, option, optval, optvallen);
-            if (nn_slow (rc != 0))
-                throw nn::exception ();
+            ibv_res.port = port;
+            m_sync(&ibv_res, "", rdma_buffer);
+
+            m_modify_qp_to_rts_and_rtr(&ibv_res);
+
+            return 0;
         }
 
-        inline int bind (const char *addr)
+        inline int connect (const char *addr, uint64_t port)
         {
-            int rc = nn_bind (s, addr);
-            if (nn_slow (rc < 0))
-                throw nn::exception ();
-            return rc;
-        }
+            ibv_res.port = port;
+            m_sync(&ibv_res, addr, rdma_buffer);
 
-        inline int connect (const char *addr)
-        {
-            int rc = nn_connect (s, addr);
-            if (nn_slow (rc < 0))
-                throw nn::exception ();
-            return rc;
+            m_modify_qp_to_rts_and_rtr(&ibv_res);
+
+            return 0;
         }
 
         inline void shutdown (int how)
@@ -185,6 +196,10 @@ namespace nn
     private:
 
         int s;
+        m_ibv_res ibv_res; 
+        char *rdma_buffer;
+        char *rdma_send_buffer;
+        char *rdma_recv_buffer;
 
         /*  Prevent making copies of the socket by accident. */
         socket (const socket&);

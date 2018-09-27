@@ -18,6 +18,9 @@
 #define _GLOBAL_H_
 
 #define __STDC_LIMIT_MACROS
+
+#include <stdarg.h>
+
 #include <stdint.h>
 #include <unistd.h>
 #include <cstddef>

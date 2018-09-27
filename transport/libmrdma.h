@@ -160,7 +160,7 @@ m_get_usec() {
 	return (long long)now.tv_sec * 1000000 + now.tv_nsec / 1000;
 }
 
-static int
+static void
 m_get_is_odp (struct m_ibv_res *ibv_res) {
 	struct ibv_exp_device_attr dattr;
 	dattr.comp_mask = IBV_EXP_DEVICE_ATTR_ODP | IBV_EXP_DEVICE_ATTR_EXP_CAP_FLAGS;
@@ -207,7 +207,7 @@ m_connection_cpy(struct m_ibv_res *ibv_res, int qp_index_dst, int qp_index_src) 
 	ibv_res->qp[qp_index_dst] = ibv_res->qp[qp_index_src];
 	ibv_res->send_cq[qp_index_dst] = ibv_res->send_cq[qp_index_src];
 	ibv_res->recv_cq[qp_index_dst] = ibv_res->recv_cq[qp_index_src];
-	if (ibv_res->model = M_UD) {
+	if (ibv_res->model == M_UD) {
 		
 		ibv_res->ah[qp_index_dst] = ibv_res->ah[qp_index_src];
 	}
@@ -238,8 +238,6 @@ m_client_exchange(const char *server, uint16_t port, struct m_param **lparam,
  	struct hostent *hent = gethostbyname(server);
 	CPEN(hent);
 
-	ssize_t tmp; // None-sense
-
 	struct sockaddr_in sin;
 	FILL(sin);
 	sin.sin_family = PF_INET;
@@ -252,15 +250,15 @@ m_client_exchange(const char *server, uint16_t port, struct m_param **lparam,
 //		PRINT_LINE
 	for (int i = 0; i < qp_num; i ++ ) {
 
-		tmp = write(s, lparam[i], sizeof(**lparam));
-		tmp = read(s, (rparam[i]), sizeof(**lparam));
+		write(s, lparam[i], sizeof(**lparam));
+		read(s, (rparam[i]), sizeof(**lparam));
 #ifdef DEBUG
 		printf("remote lid %d, qpn %d\n", (rparam[i])->lid, (rparam[i])->qpn);
 #endif
 		// PRINT_LINE
 
-		tmp = write(s, lpriv_data[i], sizeof(**lpriv_data));
-		tmp = read(s, (rpriv_data[i]), sizeof(**lpriv_data));
+		write(s, lpriv_data[i], sizeof(**lpriv_data));
+		read(s, (rpriv_data[i]), sizeof(**lpriv_data));
 #ifdef DEBUG
 		printf("remote addr %ld, rkey %d\n", (rpriv_data[i])->buffer_addr,
 		       (rpriv_data[i])->buffer_rkey);
@@ -284,7 +282,6 @@ m_server_exchange(uint16_t port, struct m_param **lparam, struct m_priv_data **l
 	}
 
 	int on = 1;
-	ssize_t tmp; // None-sense
 
 	CPE((setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &on, sizeof on) == -1));
 
@@ -306,15 +303,15 @@ m_server_exchange(uint16_t port, struct m_param **lparam, struct m_priv_data **l
 
 	for (int i = 0; i < qp_num; i ++ ) {
 
-		tmp = write(c, lparam[i], sizeof(**lparam));
-		tmp = read(c, (rparam[i]), sizeof(**lparam));
+		write(c, lparam[i], sizeof(**lparam));
+		read(c, (rparam[i]), sizeof(**lparam));
 
 #ifdef DEBUG
 		printf("remote lid %d, qpn %d\n", lparam[i]->lid, lparam[i]->qpn);
 #endif
 
-		tmp = write(c, lpriv_data[i], sizeof(**lpriv_data));
-		tmp = read(c, (rpriv_data[i]), sizeof(**lpriv_data));
+		write(c, lpriv_data[i], sizeof(**lpriv_data));
+		read(c, (rpriv_data[i]), sizeof(**lpriv_data));
 
 #ifdef DEBUG
 		printf("remote addr %ld, rkey %d\n", (rpriv_data[i])->buffer_addr,
