@@ -245,6 +245,7 @@ m_client_exchange(const char *server, uint16_t port, struct m_param **lparam,
 	sin.sin_addr = *((struct in_addr *)hent->h_addr);
 
 	m_nano_sleep(500000000);
+	// CPE((connect(s, (struct sockaddr *)&sin, sizeof(sin)) == -1));
 	CPE((connect(s, (struct sockaddr *)&sin, sizeof(sin)) == -1));
 
 //		PRINT_LINE
@@ -691,7 +692,7 @@ m_sync(struct m_ibv_res *ibv_res, const char *server, char *buffer) {
 		ibv_res->rparam[i] = (struct m_param *)malloc(sizeof(struct m_param));
 		ibv_res->rpriv_data[i] = (struct m_priv_data *)malloc(sizeof(struct m_priv_data));
 
-#ifdef DEBUG
+#ifdef DEBUG_
 		printf("Local LID = %d, QPN = %d, PSN = %d\n",
 		       ibv_res->lparam[i]->lid, ibv_res->lparam[i]->qpn, ibv_res->lparam[i]->psn);
 		printf("Local Addr = %ld, RKey = %d, LEN = %zu\n",
@@ -705,11 +706,32 @@ m_sync(struct m_ibv_res *ibv_res, const char *server, char *buffer) {
 //				ibv_res->rparam = m_server_exchange(ibv_res->port, ibv_res->lparam[i]);
 		m_server_exchange(ibv_res->port, ibv_res->lparam, ibv_res->lpriv_data,
 		                  ibv_res->rparam, ibv_res->rpriv_data, ibv_res->qp_sum);
+#ifdef DEBUG
+		for (int i = 0; i < ibv_res->qp_sum; i ++ ) {
+
+			printf("[SERVER]Local LID = %d, QPN = %d, PSN = %d\n",
+			       ibv_res->lparam[i]->lid, ibv_res->lparam[i]->qpn, ibv_res->lparam[i]->psn);
+			printf("[SERVER]Local Addr = %ld, RKey = %d, LEN = %zu\n",
+			       ibv_res->lpriv_data[i]->buffer_addr, ibv_res->lpriv_data[i]->buffer_rkey,
+			       ibv_res->lpriv_data[i]->buffer_length);
+		}
+#endif
 	} else {
 		m_client_exchange(server, ibv_res->port, ibv_res->lparam, ibv_res->lpriv_data,
 		                  ibv_res->rparam, ibv_res->rpriv_data, ibv_res->qp_sum);
-//				ibv_res->rparam = m_client_exchange(server, ibv_res->port, ibv_res->lparam);
+#ifdef DEBUG
+		for (int i = 0; i < ibv_res->qp_sum; i ++ ) {
+
+			printf("[CLIENT]Local LID = %d, QPN = %d, PSN = %d\n",
+			       ibv_res->lparam[i]->lid, ibv_res->lparam[i]->qpn, ibv_res->lparam[i]->psn);
+			printf("[CLIENT]Local Addr = %ld, RKey = %d, LEN = %zu\n",
+			       ibv_res->lpriv_data[i]->buffer_addr, ibv_res->lpriv_data[i]->buffer_rkey,
+			       ibv_res->lpriv_data[i]->buffer_length);
+		}
+#endif
 	}
+//				ibv_res->rparam = m_client_exchange(server, ibv_res->port, ibv_res->lparam);
+
 
 /*
 	printf("Remote LID = %d, QPN = %d, PSN = %d\n",

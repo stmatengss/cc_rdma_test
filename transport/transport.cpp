@@ -19,6 +19,7 @@
 #include "transport.h"
 #ifdef USE_RDMA
   #include "nn.hpp"
+  #include "sig_sync.hpp"
 #else
   #include "nn_back.hpp"
 #endif
@@ -182,14 +183,102 @@ Socket * Transport::connect(uint64_t dest_id,uint64_t port_id) {
   return socket;
 }
 
+#ifdef USE_RDMA
 void Transport::init() {
   _sock_cnt = get_socket_count();
 
   rr = 0;
 	printf("Tport Init %d: %ld\n",g_node_id,_sock_cnt);
 
+  vector<std::thread> th_bind;
+  vector<std::thread> th_connect;
+
   string path = get_path();
 	read_ifconfig(path.c_str());
+
+  for(uint64_t node_id = 0; node_id < g_total_node_cnt; node_id++) {
+    if(node_id == g_node_id)
+      continue;
+    // Listening ports
+    if(ISCLIENTN(node_id)) {
+      for(uint64_t client_thread_id = g_client_thread_cnt + g_client_rem_thread_cnt; client_thread_id < g_client_thread_cnt + g_client_rem_thread_cnt + g_client_send_thread_cnt; client_thread_id++) {
+
+        th_bind.push_back(std::thread([=](){
+          uint64_t port_id = get_port_id(node_id,g_node_id,client_thread_id % g_client_send_thread_cnt);
+          Socket * sock = bind(port_id);
+          recv_sockets.push_back(sock);
+          DEBUG("Socket insert: {%ld}: %ld\n",node_id,(uint64_t)sock);
+          GREENLOG("Socket insert: {%ld,%ld}: %ld\n",node_id,client_thread_id,(uint64_t)port_id);
+
+        }));
+      }
+    } else {
+      for(uint64_t server_thread_id = g_thread_cnt + g_rem_thread_cnt; server_thread_id < g_thread_cnt + g_rem_thread_cnt + g_send_thread_cnt; server_thread_id++) {
+
+        th_bind.push_back(std::thread([=](){
+          uint64_t port_id = get_port_id(node_id,g_node_id,server_thread_id % g_send_thread_cnt);
+          Socket * sock = bind(port_id);
+          recv_sockets.push_back(sock);
+          GREENLOG("Socket insert: {%ld,%ld}: %ld\n",node_id,server_thread_id,(uint64_t)port_id);
+          
+        }));
+      }
+    }
+  }
+
+  sig_sync::IPCLock ipc = sig_sync::IPCLock(g_total_node_cnt);
+  ipc.incre();
+  ipc.wait();
+
+  for(uint64_t node_id = 0; node_id < g_total_node_cnt; node_id++) {
+    // Sending ports
+    if(ISCLIENTN(g_node_id)) {
+      for(uint64_t client_thread_id = g_client_thread_cnt + g_client_rem_thread_cnt; client_thread_id < g_client_thread_cnt + g_client_rem_thread_cnt + g_client_send_thread_cnt; client_thread_id++) {
+
+        th_connect.push_back(std::thread([=](){
+          uint64_t port_id = get_port_id(g_node_id,node_id,client_thread_id % g_client_send_thread_cnt);
+          std::pair<uint64_t,uint64_t> sender = std::make_pair(node_id,client_thread_id);
+          Socket * sock = connect(node_id,port_id);
+          send_sockets.insert(std::make_pair(sender,sock));
+          REDLOG("Socket insert: {%ld,%ld}: %ld\n",node_id,client_thread_id,(uint64_t)port_id);
+          DEBUG("Socket insert: {%ld,%ld}: %ld\n",node_id,client_thread_id,(uint64_t)sock);
+        }));
+      }
+    } else {
+      for(uint64_t server_thread_id = g_thread_cnt + g_rem_thread_cnt; server_thread_id < g_thread_cnt + g_rem_thread_cnt + g_send_thread_cnt; server_thread_id++) {
+
+        th_connect.push_back(std::thread([=](){
+          uint64_t port_id = get_port_id(g_node_id,node_id,server_thread_id % g_send_thread_cnt);
+          std::pair<uint64_t,uint64_t> sender = std::make_pair(node_id,server_thread_id);
+          Socket * sock = connect(node_id,port_id); 
+          send_sockets.insert(std::make_pair(sender,sock));
+          DEBUG("Socket insert: {%ld,%ld}: %ld\n",node_id,server_thread_id,(uint64_t)sock);
+          REDLOG("Socket insert: {%ld,%ld}: %ld\n",node_id,server_thread_id,(uint64_t)port_id);
+        }));
+      }
+    }
+  }
+
+  for (std::thread &th: th_connect) {
+    th.join();
+  }
+
+  for (std::thread &th: th_bind) {
+    th.join();
+  }
+
+
+	fflush(stdout);
+}
+#else
+void Transport::init() {
+  _sock_cnt = get_socket_count();
+
+  rr = 0;
+  printf("Tport Init %d: %ld\n",g_node_id,_sock_cnt);
+
+  string path = get_path();
+  read_ifconfig(path.c_str());
 
   for(uint64_t node_id = 0; node_id < g_total_node_cnt; node_id++) {
     if(node_id == g_node_id)
@@ -201,6 +290,7 @@ void Transport::init() {
         Socket * sock = bind(port_id);
         recv_sockets.push_back(sock);
         DEBUG("Socket insert: {%ld}: %ld\n",node_id,(uint64_t)sock);
+        GREENLOG("Socket insert: {%ld,%ld}: %ld\n",node_id,client_thread_id,(uint64_t)port_id);
       }
     } else {
       for(uint64_t server_thread_id = g_thread_cnt + g_rem_thread_cnt; server_thread_id < g_thread_cnt + g_rem_thread_cnt + g_send_thread_cnt; server_thread_id++) {
@@ -208,6 +298,8 @@ void Transport::init() {
         Socket * sock = bind(port_id);
         recv_sockets.push_back(sock);
         DEBUG("Socket insert: {%ld}: %ld\n",node_id,(uint64_t)sock);
+        GREENLOG("Socket insert: {%ld,%ld}: %ld\n",node_id,server_thread_id,(uint64_t)port_id);
+
       }
     }
     // Sending ports
@@ -218,6 +310,8 @@ void Transport::init() {
         Socket * sock = connect(node_id,port_id);
         send_sockets.insert(std::make_pair(sender,sock));
         DEBUG("Socket insert: {%ld,%ld}: %ld\n",node_id,client_thread_id,(uint64_t)sock);
+        REDLOG("Socket insert: {%ld,%ld}: %ld\n",node_id,client_thread_id,(uint64_t)port_id);
+
       }
     } else {
       for(uint64_t server_thread_id = g_thread_cnt + g_rem_thread_cnt; server_thread_id < g_thread_cnt + g_rem_thread_cnt + g_send_thread_cnt; server_thread_id++) {
@@ -226,13 +320,15 @@ void Transport::init() {
         Socket * sock = connect(node_id,port_id);
         send_sockets.insert(std::make_pair(sender,sock));
         DEBUG("Socket insert: {%ld,%ld}: %ld\n",node_id,server_thread_id,(uint64_t)sock);
+        REDLOG("Socket insert: {%ld,%ld}: %ld\n",node_id,server_thread_id,(uint64_t)port_id);
       }
     }
   }
 
 
-	fflush(stdout);
+  fflush(stdout);
 }
+#endif
 
 // rename sid to send thread id
 void Transport::send_msg(uint64_t send_thread_id, uint64_t dest_node_id, void * sbuf,int size) {
