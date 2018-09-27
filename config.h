@@ -72,10 +72,10 @@
 /***********************************************/
 // Message Passing
 /***********************************************/
-// #define TPORT_TYPE TCP
+ #define TPORT_TYPE TCP
 // #define TPORT_PORT 17000
 // #define SET_AFFINITY true
-#define TPORT_TYPE IPC
+//#define TPORT_TYPE IPC
 #define TPORT_PORT 17000
 #define SET_AFFINITY true
 

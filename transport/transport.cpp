@@ -140,6 +140,7 @@ Socket * Transport::bind(uint64_t port_id) {
 #endif
   printf("Sock Binding to %s %d\n",socket_name,g_node_id);
   int rc = socket->sock.bind(socket_name);
+  printf("Sock Binding to %s %d End\n",socket_name,g_node_id);
   if(rc < 0) {
     printf("Bind Error: %d %s\n",errno,strerror(errno));
     assert(false);
@@ -161,6 +162,7 @@ Socket * Transport::connect(uint64_t dest_id,uint64_t port_id) {
 #endif
   printf("Sock Connecting to %s %d -> %ld\n",socket_name,g_node_id,dest_id);
   int rc = socket->sock.connect(socket_name);
+  printf("Sock Connecting to %s %d -> %ld End\n",socket_name,g_node_id,dest_id);
   if(rc < 0) {
     printf("Connect Error: %d %s\n",errno,strerror(errno));
     assert(false);
