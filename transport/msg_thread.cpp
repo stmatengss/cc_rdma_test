@@ -36,7 +36,7 @@ void MessageThread::init(uint64_t thd_id) {
     DEBUG_M("MessageThread::init mbuf alloc\n");
     buffer[n] = (mbuf *)mem_allocator.align_alloc(sizeof(mbuf));
     buffer[n]->init(n);
-    buffer[n]->reset(n);
+    buffer[n]->reset(n); 
   }
   _thd_id = thd_id;
 }

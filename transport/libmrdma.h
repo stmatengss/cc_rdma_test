@@ -6,6 +6,7 @@
 
 #define LIBMRDMA_H
 
+#include <libmemcached/memcached.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -20,6 +21,7 @@
 #include <time.h>
 #include <assert.h>
 
+
 #define M_RC 0x0
 #define M_UC 0x1
 #define M_UD 0x2
@@ -33,12 +35,14 @@
 #define M_CONN_LEN		(sizeof(struct m_param) + sizeof(m_priv_data))
 #define M_CONN_PADDING	(M_CONN_LEN + M_UD_PADDING)
 
-#define M_WR_COUNT
+// #define M_WR_COUNT
 
-#define M_USE_SRQ
+// #define M_USE_SRQ
 #ifdef M_USE_SRQ
 	#define M_SRQ_MAX_SHARE_NUM 1024
 #endif
+
+#define M_USE_MEMCACHE
 
 struct m_param {
 	int lid;
@@ -63,9 +67,9 @@ struct m_ibv_res {
 	struct ibv_mr *mr;
 	struct ibv_qp **qp;
 	struct ibv_cq **send_cq, **recv_cq;
-#ifdef M_USE_SRQ
+// #ifdef M_USE_SRQ
 	struct ibv_srq *srq;
-#endif
+// #endif
 	struct m_priv_data **lpriv_data, **rpriv_data;
 	struct m_param **lparam, **rparam;
 //		char *send_buffer;
@@ -113,6 +117,91 @@ struct m_ibv_res {
 #define PRINT_LINE printf("line: %d\n", __LINE__);
 #define PRINT_FUNC printf("func: %s\n", __FUNC__);
 #define FUCK()     printf("FUCK\n");
+
+// static char REG_IP[] = "192.168.1.61\n";
+#define MEMCACHED_PORT 10086
+static char REG_IP[] = "10.0.0.11\n";
+
+static __thread memcached_st *memc = NULL;
+
+static memcached_st* m_memc_create()
+{
+
+
+    memcached_server_st *servers = NULL;
+    memcached_st *memc = memcached_create(NULL);
+    memcached_return rc;
+
+    memc = memcached_create(NULL);
+
+    if (memc == NULL) {
+        printf("Couldn't create memcached server.\n");
+    }
+
+    char *registry_ip = REG_IP;
+
+    /* We run the memcached server on the default memcached port */
+    servers = memcached_server_list_append(servers,
+        registry_ip, MEMCACHED_PORT, &rc);
+    rc = memcached_server_push(memc, servers);
+    if (rc != MEMCACHED_SUCCESS) {
+        printf("Couldn't add memcached server.\n");
+    } 
+
+    return memc;
+}
+
+static void m_memc_publish(const char *key, void *value, int len)
+{
+    assert(key != NULL && value != NULL && len > 0);
+    memcached_return rc;
+
+
+    if(memc == NULL) {
+		printf ("PUT Create memcached server\n");
+        memc = m_memc_create();
+    }
+
+    rc = memcached_set(memc, key, strlen(key), (const char *) value, len, 
+        (time_t) 0, (uint32_t) 0);
+    if (rc != MEMCACHED_SUCCESS) {
+        char *registry_ip = REG_IP;
+        fprintf(stderr, "\tHRD: Failed to publish key %s. Error %s. "
+            "Reg IP = %s\n", key, memcached_strerror(memc, rc), registry_ip);
+        exit(-1);
+    }
+}
+
+static int m_memc_get_published(const char *key, void **value)
+{
+    assert(key != NULL);
+
+    if(memc == NULL) {
+		printf ("GET Create memcached server\n");
+        memc = m_memc_create();
+    }
+
+    memcached_return rc;
+    size_t value_length;
+    uint32_t flags;
+
+    *value = memcached_get(memc, key, strlen(key), &value_length, &flags, &rc);
+
+    if(rc == MEMCACHED_SUCCESS ) {
+        return (int) value_length;
+    } else if (rc == MEMCACHED_NOTFOUND) {
+        assert(*value == NULL);
+        return -1;
+    } else {
+        char *registry_ip = REG_IP;
+        fprintf(stderr, "HRD: Error finding value for key \"%s\": %s. "
+            "Reg IP = %s\n", key, memcached_strerror(memc, rc), registry_ip);
+        exit(-1);
+    }
+    
+    /* Never reached */
+    assert(false);
+}
 
 static void
 m_init_ds(struct m_ibv_res *ibv_res) {
@@ -221,6 +310,58 @@ m_client_exchange_via_ud(struct m_ibv_res *ibv_res, struct m_ibv_res *ibv_res_ds
 
 }
 
+#ifdef M_USE_MEMCACHE
+
+static void
+m_client_exchange(const char *server, uint16_t port, struct m_param **lparam,
+                  struct m_priv_data **lpriv_data, struct m_param **rparam,
+                  struct m_priv_data **rpriv_data, int qp_num) {
+
+	printf("[Port]%d\n", (int)port);
+
+	char port_str[10];
+	memcpy(port_str, &port, sizeof(int));
+	port_str[5] = '\n';
+	port_str[4] = 'a';
+	m_memc_publish(port_str, lparam[0], sizeof(**lparam) * qp_num);
+
+	port_str[4] = 'b';	
+	m_memc_publish(port_str, lpriv_data[0], sizeof(**lpriv_data) * qp_num);
+	
+	port_str[4] = 'c';
+	while(m_memc_get_published(port_str, (void **)&rparam[0]) == -1);
+
+	port_str[4] = 'd';
+	while(m_memc_get_published(port_str, (void **)&rpriv_data[0]) == -1);
+
+
+}
+
+static void
+m_server_exchange(uint16_t port, struct m_param **lparam, struct m_priv_data **lpriv_data,
+                  struct m_param **rparam, struct m_priv_data **rpriv_data, int qp_num) {
+
+	printf("[Port]%d\n", (int)port);
+
+	char port_str[10];
+	memcpy(port_str, &port, sizeof(int));
+	port_str[5] = '\n';
+	port_str[4] = 'a';
+	m_memc_publish(port_str, lparam[0], sizeof(**lparam) * qp_num);
+
+	port_str[4] = 'b';	
+	m_memc_publish(port_str, lpriv_data[0], sizeof(**lpriv_data) * qp_num);
+
+	port_str[4] = 'c';
+	while(m_memc_get_published(port_str, (void **)&rparam[0]) == -1);
+
+	port_str[4] = 'd';
+	while(m_memc_get_published(port_str, (void **)&rpriv_data[0]) == -1);
+
+}
+
+#else // NAIVE SOCKET
+
 static void
 m_client_exchange(const char *server, uint16_t port, struct m_param **lparam,
                   struct m_priv_data **lpriv_data, struct m_param **rparam,
@@ -323,6 +464,8 @@ m_server_exchange(uint16_t port, struct m_param **lparam, struct m_priv_data **l
 	close(c);
 	close(s);
 }
+
+#endif
 
 static struct ibv_device *
 m_get_deveice (int index) {
@@ -704,8 +847,7 @@ m_sync(struct m_ibv_res *ibv_res, const char *server, char *buffer) {
 	// struct m_param param;
 	if (ibv_res->is_server) {
 //				ibv_res->rparam = m_server_exchange(ibv_res->port, ibv_res->lparam[i]);
-		m_server_exchange(ibv_res->port, ibv_res->lparam, ibv_res->lpriv_data,
-		                  ibv_res->rparam, ibv_res->rpriv_data, ibv_res->qp_sum);
+		m_server_exchange(ibv_res->port, ibv_res->lparam, ibv_res->lpriv_data, ibv_res->rparam, ibv_res->rpriv_data, ibv_res->qp_sum);
 #ifdef DEBUG
 		for (int i = 0; i < ibv_res->qp_sum; i ++ ) {
 
@@ -717,8 +859,7 @@ m_sync(struct m_ibv_res *ibv_res, const char *server, char *buffer) {
 		}
 #endif
 	} else {
-		m_client_exchange(server, ibv_res->port, ibv_res->lparam, ibv_res->lpriv_data,
-		                  ibv_res->rparam, ibv_res->rpriv_data, ibv_res->qp_sum);
+		m_client_exchange(server, ibv_res->port, ibv_res->lparam, ibv_res->lpriv_data, ibv_res->rparam, ibv_res->rpriv_data, ibv_res->qp_sum);
 #ifdef DEBUG
 		for (int i = 0; i < ibv_res->qp_sum; i ++ ) {
 

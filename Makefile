@@ -15,7 +15,7 @@ CFLAGS += $(DEPS) -D NOGRAPHITE=1 -Werror -lnanomsg -Wno-sizeof-pointer-memacces
 LDFLAGS = -Wall -L. -L$(NNMSG) -L$(JEMALLOC)/lib -Wl,-rpath,$(JEMALLOC)/lib -pthread -gdwarf-3 -lrt -std=c++11
 LDFLAGS += $(CFLAGS)
 #LIBS = -lnanomsg -lanl -ljemalloc 
-LIBS = -lanl -ljemalloc -libverbs -lrdmacm
+LIBS = -lanl -ljemalloc -libverbs -lrdmacm -lmemcached
 
 DB_MAINS = ./client/client_main.cpp ./system/sequencer_main.cpp ./unit_tests/unit_main.cpp
 CL_MAINS = ./system/main.cpp ./system/sequencer_main.cpp ./unit_tests/unit_main.cpp
