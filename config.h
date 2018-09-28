@@ -5,7 +5,7 @@
 /***********************************************/
 // RDMA configuration
 /***********************************************/
-#define USE_RDMA
+ #define USE_RDMA
 #define RDMA_BUFFER_SIZE (1<<20)
 #define RDMA_CYC_QP_NUM (1<<10)
 

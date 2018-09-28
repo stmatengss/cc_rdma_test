@@ -35,6 +35,7 @@
 #define M_CONN_LEN		(sizeof(struct m_param) + sizeof(m_priv_data))
 #define M_CONN_PADDING	(M_CONN_LEN + M_UD_PADDING)
 
+// #define RDMA_DEBUG
 // #define M_WR_COUNT
 
 // #define M_USE_SRQ
@@ -124,6 +125,15 @@ static char REG_IP[] = "10.0.0.11\n";
 
 static __thread memcached_st *memc = NULL;
 
+static int int_to_char(int num, char *res) {
+	int counter = 0;
+	while(num) {
+		res[counter ++ ] = '0' + (num % 10);
+		num /= 10;
+	}
+	return counter;
+}
+
 static memcached_st* m_memc_create()
 {
 
@@ -158,7 +168,6 @@ static void m_memc_publish(const char *key, void *value, int len)
 
 
     if(memc == NULL) {
-		printf ("PUT Create memcached server\n");
         memc = m_memc_create();
     }
 
@@ -177,7 +186,6 @@ static int m_memc_get_published(const char *key, void **value)
     assert(key != NULL);
 
     if(memc == NULL) {
-		printf ("GET Create memcached server\n");
         memc = m_memc_create();
     }
 
@@ -317,21 +325,25 @@ m_client_exchange(const char *server, uint16_t port, struct m_param **lparam,
                   struct m_priv_data **lpriv_data, struct m_param **rparam,
                   struct m_priv_data **rpriv_data, int qp_num) {
 
+#ifdef RDMA_DEBUG
 	printf("[Port]%d\n", (int)port);
+#endif
 
 	char port_str[10];
-	memcpy(port_str, &port, sizeof(int));
-	port_str[5] = '\n';
-	port_str[4] = 'a';
+	
+	int len = int_to_char(port, port_str);
+
+	port_str[len - 1] = '\0';
+	port_str[len - 2] = 'c';
 	m_memc_publish(port_str, lparam[0], sizeof(**lparam) * qp_num);
 
-	port_str[4] = 'b';	
+	port_str[len - 2] = 'd';	
 	m_memc_publish(port_str, lpriv_data[0], sizeof(**lpriv_data) * qp_num);
-	
-	port_str[4] = 'c';
+
+	port_str[len - 2] = 'a';
 	while(m_memc_get_published(port_str, (void **)&rparam[0]) == -1);
 
-	port_str[4] = 'd';
+	port_str[len - 2] = 'b';
 	while(m_memc_get_published(port_str, (void **)&rpriv_data[0]) == -1);
 
 
@@ -341,21 +353,25 @@ static void
 m_server_exchange(uint16_t port, struct m_param **lparam, struct m_priv_data **lpriv_data,
                   struct m_param **rparam, struct m_priv_data **rpriv_data, int qp_num) {
 
+#ifdef RDMA_DEBUG
 	printf("[Port]%d\n", (int)port);
+#endif
 
 	char port_str[10];
-	memcpy(port_str, &port, sizeof(int));
-	port_str[5] = '\n';
-	port_str[4] = 'a';
+	
+	int len = int_to_char(port, port_str);
+
+	port_str[len - 1] = '\0';
+	port_str[len - 2] = 'a';
 	m_memc_publish(port_str, lparam[0], sizeof(**lparam) * qp_num);
 
-	port_str[4] = 'b';	
+	port_str[len - 2] = 'b';	
 	m_memc_publish(port_str, lpriv_data[0], sizeof(**lpriv_data) * qp_num);
 
-	port_str[4] = 'c';
+	port_str[len - 2] = 'c';
 	while(m_memc_get_published(port_str, (void **)&rparam[0]) == -1);
 
-	port_str[4] = 'd';
+	port_str[len - 2] = 'd';
 	while(m_memc_get_published(port_str, (void **)&rpriv_data[0]) == -1);
 
 }
@@ -394,14 +410,14 @@ m_client_exchange(const char *server, uint16_t port, struct m_param **lparam,
 
 		write(s, lparam[i], sizeof(**lparam));
 		read(s, (rparam[i]), sizeof(**lparam));
-#ifdef DEBUG
+#ifdef RDMA_DEBUG
 		printf("remote lid %d, qpn %d\n", (rparam[i])->lid, (rparam[i])->qpn);
 #endif
 		// PRINT_LINE
 
 		write(s, lpriv_data[i], sizeof(**lpriv_data));
 		read(s, (rpriv_data[i]), sizeof(**lpriv_data));
-#ifdef DEBUG
+#ifdef RDMA_DEBUG
 		printf("remote addr %ld, rkey %d\n", (rpriv_data[i])->buffer_addr,
 		       (rpriv_data[i])->buffer_rkey);
 #endif
@@ -448,14 +464,14 @@ m_server_exchange(uint16_t port, struct m_param **lparam, struct m_priv_data **l
 		write(c, lparam[i], sizeof(**lparam));
 		read(c, (rparam[i]), sizeof(**lparam));
 
-#ifdef DEBUG
+#ifdef RDMA_DEBUG
 		printf("remote lid %d, qpn %d\n", lparam[i]->lid, lparam[i]->qpn);
 #endif
 
 		write(c, lpriv_data[i], sizeof(**lpriv_data));
 		read(c, (rpriv_data[i]), sizeof(**lpriv_data));
 
-#ifdef DEBUG
+#ifdef RDMA_DEBUG
 		printf("remote addr %ld, rkey %d\n", (rpriv_data[i])->buffer_addr,
 		       ((rpriv_data[i]))->buffer_rkey);
 #endif
@@ -835,7 +851,7 @@ m_sync(struct m_ibv_res *ibv_res, const char *server, char *buffer) {
 		ibv_res->rparam[i] = (struct m_param *)malloc(sizeof(struct m_param));
 		ibv_res->rpriv_data[i] = (struct m_priv_data *)malloc(sizeof(struct m_priv_data));
 
-#ifdef DEBUG_
+#ifdef RDMA_DEBUG
 		printf("Local LID = %d, QPN = %d, PSN = %d\n",
 		       ibv_res->lparam[i]->lid, ibv_res->lparam[i]->qpn, ibv_res->lparam[i]->psn);
 		printf("Local Addr = %ld, RKey = %d, LEN = %zu\n",
@@ -848,26 +864,26 @@ m_sync(struct m_ibv_res *ibv_res, const char *server, char *buffer) {
 	if (ibv_res->is_server) {
 //				ibv_res->rparam = m_server_exchange(ibv_res->port, ibv_res->lparam[i]);
 		m_server_exchange(ibv_res->port, ibv_res->lparam, ibv_res->lpriv_data, ibv_res->rparam, ibv_res->rpriv_data, ibv_res->qp_sum);
-#ifdef DEBUG
+#ifdef RDMA_DEBUG
 		for (int i = 0; i < ibv_res->qp_sum; i ++ ) {
 
 			printf("[SERVER]Local LID = %d, QPN = %d, PSN = %d\n",
-			       ibv_res->lparam[i]->lid, ibv_res->lparam[i]->qpn, ibv_res->lparam[i]->psn);
+			       ibv_res->rparam[i]->lid, ibv_res->rparam[i]->qpn, ibv_res->rparam[i]->psn);
 			printf("[SERVER]Local Addr = %ld, RKey = %d, LEN = %zu\n",
-			       ibv_res->lpriv_data[i]->buffer_addr, ibv_res->lpriv_data[i]->buffer_rkey,
-			       ibv_res->lpriv_data[i]->buffer_length);
+			       ibv_res->rpriv_data[i]->buffer_addr, ibv_res->rpriv_data[i]->buffer_rkey,
+			       ibv_res->rpriv_data[i]->buffer_length);
 		}
 #endif
 	} else {
 		m_client_exchange(server, ibv_res->port, ibv_res->lparam, ibv_res->lpriv_data, ibv_res->rparam, ibv_res->rpriv_data, ibv_res->qp_sum);
-#ifdef DEBUG
+#ifdef RDMA_DEBUG
 		for (int i = 0; i < ibv_res->qp_sum; i ++ ) {
 
 			printf("[CLIENT]Local LID = %d, QPN = %d, PSN = %d\n",
-			       ibv_res->lparam[i]->lid, ibv_res->lparam[i]->qpn, ibv_res->lparam[i]->psn);
+			       ibv_res->rparam[i]->lid, ibv_res->rparam[i]->qpn, ibv_res->rparam[i]->psn);
 			printf("[CLIENT]Local Addr = %ld, RKey = %d, LEN = %zu\n",
-			       ibv_res->lpriv_data[i]->buffer_addr, ibv_res->lpriv_data[i]->buffer_rkey,
-			       ibv_res->lpriv_data[i]->buffer_length);
+			       ibv_res->rpriv_data[i]->buffer_addr, ibv_res->rpriv_data[i]->buffer_rkey,
+			       ibv_res->rpriv_data[i]->buffer_length);
 		}
 #endif
 	}

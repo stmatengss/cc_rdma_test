@@ -187,6 +187,12 @@ Socket * Transport::connect(uint64_t dest_id,uint64_t port_id) {
 void Transport::init() {
   _sock_cnt = get_socket_count();
 
+  sig_sync::IPCLock ipc = sig_sync::IPCLock(g_total_node_cnt);
+
+  if (g_node_id == 0) {
+    ipc.clear();
+  }
+
   rr = 0;
 	printf("Tport Init %d: %ld\n",g_node_id,_sock_cnt);
 
@@ -207,8 +213,8 @@ void Transport::init() {
           uint64_t port_id = get_port_id(node_id,g_node_id,client_thread_id % g_client_send_thread_cnt);
           Socket * sock = bind(port_id);
           recv_sockets.push_back(sock);
-          DEBUG("Socket insert: {%ld}: %ld\n",node_id,(uint64_t)sock);
-          GREENLOG("Socket insert: {%ld,%ld}: %ld\n",node_id,client_thread_id,(uint64_t)port_id);
+          DEBUG("[C%ld]Socket insert: {%ld}: %ld\n",client_thread_id,node_id,(uint64_t)sock);
+          GREENLOG("[C%ld]Socket insert: {%ld}: %ld\n",client_thread_id,node_id,(uint64_t)port_id);
 
         }));
       }
@@ -219,18 +225,23 @@ void Transport::init() {
           uint64_t port_id = get_port_id(node_id,g_node_id,server_thread_id % g_send_thread_cnt);
           Socket * sock = bind(port_id);
           recv_sockets.push_back(sock);
-          GREENLOG("Socket insert: {%ld,%ld}: %ld\n",node_id,server_thread_id,(uint64_t)port_id);
+          DEBUG("[S%ld]Socket insert: {%ld}: %ld\n",server_thread_id,node_id,(uint64_t)sock);
+          GREENLOG("[S%ld]Socket insert: {%ld}: %ld\n",server_thread_id,node_id,(uint64_t)port_id);
           
         }));
       }
     }
   }
 
-  sig_sync::IPCLock ipc = sig_sync::IPCLock(g_total_node_cnt);
   ipc.incre();
   ipc.wait();
+  if (g_node_id == 0) {
+    ipc.clear();
+  }
 
   for(uint64_t node_id = 0; node_id < g_total_node_cnt; node_id++) {
+    if(node_id == g_node_id)
+      continue;
     // Sending ports
     if(ISCLIENTN(g_node_id)) {
       for(uint64_t client_thread_id = g_client_thread_cnt + g_client_rem_thread_cnt; client_thread_id < g_client_thread_cnt + g_client_rem_thread_cnt + g_client_send_thread_cnt; client_thread_id++) {
@@ -240,8 +251,8 @@ void Transport::init() {
           std::pair<uint64_t,uint64_t> sender = std::make_pair(node_id,client_thread_id);
           Socket * sock = connect(node_id,port_id);
           send_sockets.insert(std::make_pair(sender,sock));
-          REDLOG("Socket insert: {%ld,%ld}: %ld\n",node_id,client_thread_id,(uint64_t)port_id);
-          DEBUG("Socket insert: {%ld,%ld}: %ld\n",node_id,client_thread_id,(uint64_t)sock);
+          DEBUG("[C%ld]Socket insert: {%ld}: %ld\n",client_thread_id,node_id,(uint64_t)sock);
+          REDLOG("[C%ld]Socket insert: {%ld}: %ld\n",client_thread_id,node_id,(uint64_t)port_id);
         }));
       }
     } else {
@@ -252,8 +263,8 @@ void Transport::init() {
           std::pair<uint64_t,uint64_t> sender = std::make_pair(node_id,server_thread_id);
           Socket * sock = connect(node_id,port_id); 
           send_sockets.insert(std::make_pair(sender,sock));
-          DEBUG("Socket insert: {%ld,%ld}: %ld\n",node_id,server_thread_id,(uint64_t)sock);
-          REDLOG("Socket insert: {%ld,%ld}: %ld\n",node_id,server_thread_id,(uint64_t)port_id);
+          DEBUG("[S%ld]Socket insert: {%ld}: %ld\n",server_thread_id,node_id,(uint64_t)sock);
+          REDLOG("[S%ld]Socket insert: {%ld}: %ld\n",server_thread_id,node_id,(uint64_t)port_id);
         }));
       }
     }
@@ -267,6 +278,10 @@ void Transport::init() {
     th.join();
   }
 
+  // ipc.incre();
+  // ipc.wait();
+
+  REDLOG("/******** EVERYTHING IS OK ********/\n");
 
 	fflush(stdout);
 }
@@ -289,16 +304,16 @@ void Transport::init() {
         uint64_t port_id = get_port_id(node_id,g_node_id,client_thread_id % g_client_send_thread_cnt);
         Socket * sock = bind(port_id);
         recv_sockets.push_back(sock);
-        DEBUG("Socket insert: {%ld}: %ld\n",node_id,(uint64_t)sock);
-        GREENLOG("Socket insert: {%ld,%ld}: %ld\n",node_id,client_thread_id,(uint64_t)port_id);
+        DEBUG("[C%ld]Socket insert: {%ld}: %ld\n",client_thread_id,node_id,(uint64_t)sock);
+        GREENLOG("[C%ld]Socket insert: {%ld}: %ld\n",client_thread_id,node_id,(uint64_t)port_id);
       }
     } else {
       for(uint64_t server_thread_id = g_thread_cnt + g_rem_thread_cnt; server_thread_id < g_thread_cnt + g_rem_thread_cnt + g_send_thread_cnt; server_thread_id++) {
         uint64_t port_id = get_port_id(node_id,g_node_id,server_thread_id % g_send_thread_cnt);
         Socket * sock = bind(port_id);
         recv_sockets.push_back(sock);
-        DEBUG("Socket insert: {%ld}: %ld\n",node_id,(uint64_t)sock);
-        GREENLOG("Socket insert: {%ld,%ld}: %ld\n",node_id,server_thread_id,(uint64_t)port_id);
+        DEBUG("[S%ld]Socket insert: {%ld}: %ld\n",server_thread_id,node_id,(uint64_t)sock);
+        GREENLOG("[S%ld]Socket insert: {%ld}: %ld\n",server_thread_id,node_id,(uint64_t)port_id);
 
       }
     }
@@ -309,8 +324,8 @@ void Transport::init() {
         std::pair<uint64_t,uint64_t> sender = std::make_pair(node_id,client_thread_id);
         Socket * sock = connect(node_id,port_id);
         send_sockets.insert(std::make_pair(sender,sock));
-        DEBUG("Socket insert: {%ld,%ld}: %ld\n",node_id,client_thread_id,(uint64_t)sock);
-        REDLOG("Socket insert: {%ld,%ld}: %ld\n",node_id,client_thread_id,(uint64_t)port_id);
+        DEBUG("[C%ld]Socket insert: {%ld}: %ld\n",client_thread_id,node_id,(uint64_t)sock);
+        REDLOG("[C%ld]Socket insert: {%ld}: %ld\n",client_thread_id,node_id,(uint64_t)port_id);
 
       }
     } else {
@@ -319,8 +334,8 @@ void Transport::init() {
         std::pair<uint64_t,uint64_t> sender = std::make_pair(node_id,server_thread_id);
         Socket * sock = connect(node_id,port_id);
         send_sockets.insert(std::make_pair(sender,sock));
-        DEBUG("Socket insert: {%ld,%ld}: %ld\n",node_id,server_thread_id,(uint64_t)sock);
-        REDLOG("Socket insert: {%ld,%ld}: %ld\n",node_id,server_thread_id,(uint64_t)port_id);
+        DEBUG("[S%ld]Socket insert: {%ld}: %ld\n",server_thread_id,node_id,(uint64_t)sock);
+        REDLOG("[S%ld]Socket insert: {%ld}: %ld\n",server_thread_id,node_id,(uint64_t)port_id);
       }
     }
   }

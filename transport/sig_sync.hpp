@@ -35,7 +35,7 @@ public:
 
     void clear() {
         ofstream out(f);
-        out << 0;
+        out << '0';
         out.close();
     }
 
