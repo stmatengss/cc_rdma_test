@@ -1,0 +1,880 @@
+CC Alg 4
+g_done_timer 1000000
+g_thread_cnt 4
+g_abort_penalty 10000000
+g_zipf_theta 0.300000
+g_node_id 0
+g_client_rem_thread_cnt 2
+g_client_send_thread_cnt 2
+g_max_txn_per_part 500000
+g_load_per_server 100
+g_inflight_max 100
+g_mpr 1.000000
+g_mpitem 0.010000
+g_part_per_txn 2
+g_req_per_query 10
+g_client_node_cnt 2
+g_rem_thread_cnt 4
+g_send_thread_cnt 4
+g_client_thread_cnt 4
+g_num_wh 2
+g_perc_payment 0.000000
+g_wh_update 1
+g_part_cnt 2
+g_node_cnt 2
+g_thread_cnt 4
+g_query_intvl 1
+g_prt_lat_distr 0
+g_part_alloc 0
+g_mem_pad 1
+g_perc_multi_part 1.000000
+g_tup_read_perc 1.000000
+g_tup_write_perc 0.000000
+g_txn_read_perc 1.000000
+g_txn_write_perc 0.000000
+g_synth_table_size 65536
+g_max_part_key 20000
+g_max_product_key 2000
+g_max_supplier_key 2000
+g_field_per_tuple 10
+g_data_perc 100.000000
+g_access_perc 0.030000
+g_strict_ppt 0
+g_network_delay 0
+g_total_thread_cnt 13
+g_total_client_thread_cnt 8
+g_total_node_cnt 4
+g_seq_batch_time_limit 5000000
+Random seed: 2288581224144984
+Initializing stats... Done
+Initializing global manager... Done
+Initializing transport manager... Tport Init 0: 10
+Reading ifconfig file: ./ifconfig.txt
+0: 10.0.0.11
+1: 10.0.0.11
+2: 10.0.0.10
+3: 10.0.0.10
+Port ID:  0, 1 -> 0 : 17001
+Port ID:  1, 1 -> 0 : 17017
+Port ID:  2, 1 -> 0 : 17033
+Port ID:  3, 1 -> 0 : 17049
+Port ID:  0, 2 -> 0 : 17002
+Port ID:  1, 2 -> 0 : 17018
+Port ID:  0, 3 -> 0 : 17003
+Port ID:  1, 3 -> 0 : 17019
+[++++PRE++++]48
+[++++NOW++++]49
+Sock Binding to tcp://10.0.0.11:17049 0
+Sock Binding to tcp://10.0.0.11:17001 0
+Sock Binding to tcp://10.0.0.11:17033 0
+Sock Binding to tcp://10.0.0.11:17002 0
+Sock Binding to tcp://10.0.0.11:17003 0
+Sock Binding to tcp://10.0.0.11:17019 0
+Sock Binding to tcp://10.0.0.11:17018 0
+Sock Binding to tcp://10.0.0.11:17017 0
+Sock Binding to tcp://10.0.0.11:17001 0 End
+[32m[S8]Socket insert: {1}: 17001
+[0mSock Binding to tcp://10.0.0.11:17049 0 End
+[32m[S11]Socket insert: {1}: 17049
+[0mSock Binding to tcp://10.0.0.11:17002 0 End
+[32m[C6]Socket insert: {2}: 17002
+[0mSock Binding to tcp://10.0.0.11:17033 0 End
+[32m[S10]Socket insert: {1}: 17033
+[0mSock Binding to tcp://10.0.0.11:17018 0 End
+[32m[C7]Socket insert: {2}: 17018
+[0mSock Binding to tcp://10.0.0.11:17019 0 End
+[32m[C7]Socket insert: {3}: 17019
+[0mSock Binding to tcp://10.0.0.11:17003 0 End
+[32m[C6]Socket insert: {3}: 17003
+[0mSock Binding to tcp://10.0.0.11:17017 0 End
+[32m[S9]Socket insert: {1}: 17017
+[0mbreak
+Port ID:  1, 0 -> 1 : 17020
+Port ID:  2, 0 -> 1 : 17036
+Port ID:  3, 0 -> 1 : 17052
+Port ID:  0, 0 -> 2 : 17008
+Port ID:  0, 0 -> 1 : 17004
+Port ID:  1, 0 -> 2 : 17024
+Port ID:  2, 0 -> 2 : 17040
+Port ID:  3, 0 -> 2 : 17056
+Port ID:  0, 0 -> 3 : 17012
+Port ID:  1, 0 -> 3 : 17028
+Port ID:  2, 0 -> 3 : 17044
+Port ID:  3, 0 -> 3 : 17060
+Sock Connecting to tcp://10.0.0.11;10.0.0.11:17020 0 -> 1
+Sock Connecting to tcp://10.0.0.11;10.0.0.11:17052 0 -> 1
+Sock Connecting to tcp://10.0.0.11;10.0.0.10:17024 0 -> 2
+Sock Connecting to tcp://10.0.0.11;10.0.0.10:17012 0 -> 3
+Sock Connecting to tcp://10.0.0.11;10.0.0.10:17008 0 -> 2
+Sock Connecting to tcp://10.0.0.11;10.0.0.11:17004 0 -> 1
+Sock Connecting to tcp://10.0.0.11;10.0.0.11:17036 0 -> 1
+Sock Connecting to tcp://10.0.0.11;10.0.0.10:17028 0 -> 3
+Sock Connecting to tcp://10.0.0.11;10.0.0.10:17040 0 -> 2
+Sock Connecting to tcp://10.0.0.11;10.0.0.10:17056 0 -> 2
+Sock Connecting to tcp://10.0.0.11;10.0.0.11:17020 0 -> 1 End
+[31m[S9]Socket insert: {1}: 17020
+[0mSock Connecting to tcp://10.0.0.11;10.0.0.10:17044 0 -> 3
+Sock Connecting to tcp://10.0.0.11;10.0.0.10:17060 0 -> 3
+Sock Connecting to tcp://10.0.0.11;10.0.0.11:17052 0 -> 1 End
+[31m[S11]Socket insert: {1}: 17052
+[0mSock Connecting to tcp://10.0.0.11;10.0.0.10:17008 0 -> 2 End
+[31m[S8]Socket insert: {2}: 17008
+[0mSock Connecting to tcp://10.0.0.11;10.0.0.10:17024 0 -> 2 End
+[31m[S9]Socket insert: {2}: 17024
+[0mSock Connecting to tcp://10.0.0.11;10.0.0.10:17012 0 -> 3 End
+[31m[S8]Socket insert: {3}: 17012
+[0mSock Connecting to tcp://10.0.0.11;10.0.0.11:17036 0 -> 1 End
+[31m[S10]Socket insert: {1}: 17036
+[0mSock Connecting to tcp://10.0.0.11;10.0.0.11:17004 0 -> 1 End
+[31m[S8]Socket insert: {1}: 17004
+[0mSock Connecting to tcp://10.0.0.11;10.0.0.10:17056 0 -> 2 End
+[31m[S11]Socket insert: {2}: 17056
+[0mSock Connecting to tcp://10.0.0.11;10.0.0.10:17028 0 -> 3 End
+[31m[S9]Socket insert: {3}: 17028
+[0mSock Connecting to tcp://10.0.0.11;10.0.0.10:17044 0 -> 3 End
+[31m[S10]Socket insert: {3}: 17044
+[0mSock Connecting to tcp://10.0.0.11;10.0.0.10:17040 0 -> 2 End
+[31m[S10]Socket insert: {2}: 17040
+[0mSock Connecting to tcp://10.0.0.11;10.0.0.10:17060 0 -> 3 End
+[31m[S11]Socket insert: {3}: 17060
+[0m[31m/******** EVERYTHING IS OK ********/
+[0m[31mSEND: 12
+[0m[31mRECV: 8
+[0m[31m/******** EVERYTHING IS OK ********/
+[0m[31m[1 -> 8]
+[0mLocal LID = 3, QPN = 120344, PSN = 11939177
+Local Addr = 139996029702160, RKey = 2013338234, LEN = 1048576
+Remote LID = 3, QPN = 120331, PSN = 10238434
+Remote Addr = 140197594386448, RKey = 2013334906, LEN = 1048576
+[31m[1 -> 9]
+[0mLocal LID = 3, QPN = 120340, PSN = 7114140
+Local Addr = 139996028649488, RKey = 2013337978, LEN = 1048576
+Remote LID = 3, QPN = 120329, PSN = 0
+Remote Addr = 140197667426320, RKey = 2013334138, LEN = 1048576
+[31m[1 -> 10]
+[0mLocal LID = 3, QPN = 120341, PSN = 3021149
+Local Addr = 139996031807504, RKey = 2013336954, LEN = 1048576
+Remote LID = 3, QPN = 120334, PSN = 11581620
+Remote Addr = 140197596491792, RKey = 2013335418, LEN = 1048576
+[31m[1 -> 11]
+[0mLocal LID = 3, QPN = 120343, PSN = 2809818
+Local Addr = 139996030754832, RKey = 2013338490, LEN = 1048576
+Remote LID = 3, QPN = 120333, PSN = 5515815
+Remote Addr = 140197593333776, RKey = 2013335162, LEN = 1048576
+[31m[2 -> 8]
+[0mLocal LID = 3, QPN = 120346, PSN = 4389417
+Local Addr = 139996027334672, RKey = 2013339258, LEN = 1048576
+Remote LID = 10, QPN = 3410, PSN = 13658313
+Remote Addr = 140408395710480, RKey = 671155369, LEN = 1048576
+[31m[2 -> 9]
+[0mLocal LID = 3, QPN = 120342, PSN = 14207609
+Local Addr = 139996032860176, RKey = 2013337466, LEN = 1048576
+Remote LID = 10, QPN = 3409, PSN = 2116118
+Remote Addr = 140408397815824, RKey = 671154857, LEN = 1048576
+[31m[2 -> 10]
+[0mLocal LID = 3, QPN = 120356, PSN = 3062654
+Local Addr = 139996025737232, RKey = 2013339770, LEN = 1048576
+Remote LID = 10, QPN = 3414, PSN = 6103629
+Remote Addr = 140408394657808, RKey = 671155881, LEN = 1048576
+[31m[2 -> 11]
+[0mLocal LID = 3, QPN = 120352, PSN = 7064799
+Local Addr = 139996024414224, RKey = 2013340026, LEN = 1048576
+Remote LID = 10, QPN = 3413, PSN = 7114140
+Remote Addr = 140408390447120, RKey = 671156393, LEN = 1048576
+[31m[3 -> 8]
+[0mLocal LID = 3, QPN = 120350, PSN = 6800625
+Local Addr = 139996022673424, RKey = 2013340794, LEN = 1048576
+Remote LID = 10, QPN = 3424, PSN = 5515815
+Remote Addr = 139846190923792, RKey = 671157161, LEN = 1048576
+[31m[3 -> 9]
+[0mLocal LID = 3, QPN = 120354, PSN = 8497408
+Local Addr = 139996021211152, RKey = 2013341050, LEN = 1048576
+Remote LID = 10, QPN = 3426, PSN = 7114140
+Remote Addr = 139846188818448, RKey = 671158185, LEN = 1048576
+[31m[3 -> 10]
+[0mLocal LID = 3, QPN = 120357, PSN = 5067550
+Local Addr = 139996018753552, RKey = 2013341562, LEN = 1048576
+Remote LID = 10, QPN = 3423, PSN = 0
+Remote Addr = 139846189871120, RKey = 671157673, LEN = 1048576
+[31m[3 -> 11]
+[0mLocal LID = 3, QPN = 120358, PSN = 2839345
+Local Addr = 139996017020944, RKey = 2013341818, LEN = 1048576
+Remote LID = 10, QPN = 3432, PSN = 14207609
+Remote Addr = 139846180515856, RKey = 671160745, LEN = 1048576
+Local LID = 3, QPN = 120319, PSN = 2116118
+Local Addr = 139996044881936, RKey = 2013331834, LEN = 1048576
+Remote LID = 3, QPN = 120296, PSN = 7114140
+Remote Addr = 139801006190608, RKey = 939594361, LEN = 1048576
+Local LID = 3, QPN = 120323, PSN = 0
+Local Addr = 139996040671248, RKey = 2013332858, LEN = 1048576
+Remote LID = 3, QPN = 120303, PSN = 3021149
+Remote Addr = 139800999067664, RKey = 939596665, LEN = 1048576
+Local LID = 3, QPN = 120325, PSN = 10238434
+Local Addr = 139996036972560, RKey = 2013333626, LEN = 1048576
+Remote LID = 10, QPN = 3387, PSN = 14207609
+Remote Addr = 140653793370128, RKey = 671158184, LEN = 1048576
+Local LID = 3, QPN = 120320, PSN = 5515815
+Local Addr = 139996042776592, RKey = 2013332346, LEN = 1048576
+Remote LID = 3, QPN = 120298, PSN = 11939177
+Remote Addr = 139801005137936, RKey = 939594617, LEN = 1048576
+Local LID = 3, QPN = 120322, PSN = 13658313
+Local Addr = 139996041723920, RKey = 2013332602, LEN = 1048576
+Remote LID = 10, QPN = 3385, PSN = 4389417
+Remote Addr = 140653794422800, RKey = 671157672, LEN = 1048576
+Local LID = 3, QPN = 120326, PSN = 11581620
+Local Addr = 139996038025232, RKey = 2013333370, LEN = 1048576
+Remote LID = 10, QPN = 3402, PSN = 14207609
+Remote Addr = 140145239150608, RKey = 671161512, LEN = 1048576
+Local LID = 3, QPN = 120324, PSN = 11225430
+Local Addr = 139996039208976, RKey = 2013333114, LEN = 1048576
+Remote LID = 10, QPN = 3401, PSN = 6800625
+Remote Addr = 140145241493520, RKey = 671161256, LEN = 1048576
+Local LID = 3, QPN = 120321, PSN = 6103629
+Local Addr = 139996043829264, RKey = 2013332090, LEN = 1048576
+Remote LID = 3, QPN = 120295, PSN = 2809818
+Remote Addr = 139801004085264, RKey = 939594105, LEN = 1048576
+Status: 12
+Ibv_poll_cq error!
+Error: Success
+CC Alg 4
+g_done_timer 1000000
+g_thread_cnt 4
+g_abort_penalty 10000000
+g_zipf_theta 0.300000
+g_node_id 1
+g_client_rem_thread_cnt 2
+g_client_send_thread_cnt 2
+g_max_txn_per_part 500000
+g_load_per_server 100
+g_inflight_max 100
+g_mpr 1.000000
+g_mpitem 0.010000
+g_part_per_txn 2
+g_req_per_query 10
+g_client_node_cnt 2
+g_rem_thread_cnt 4
+g_send_thread_cnt 4
+g_client_thread_cnt 4
+g_num_wh 2
+g_perc_payment 0.000000
+g_wh_update 1
+g_part_cnt 2
+g_node_cnt 2
+g_thread_cnt 4
+g_query_intvl 1
+g_prt_lat_distr 0
+g_part_alloc 0
+g_mem_pad 1
+g_perc_multi_part 1.000000
+g_tup_read_perc 1.000000
+g_tup_write_perc 0.000000
+g_txn_read_perc 1.000000
+g_txn_write_perc 0.000000
+g_synth_table_size 65536
+g_max_part_key 20000
+g_max_product_key 2000
+g_max_supplier_key 2000
+g_field_per_tuple 10
+g_data_perc 100.000000
+g_access_perc 0.030000
+g_strict_ppt 0
+g_network_delay 0
+g_total_thread_cnt 13
+g_total_client_thread_cnt 8
+g_total_node_cnt 4
+g_seq_batch_time_limit 5000000
+Random seed: 2288587253827015
+Initializing stats... Done
+Initializing global manager... Done
+Initializing transport manager... Tport Init 1: 10
+Reading ifconfig file: ./ifconfig.txt
+0: 10.0.0.11
+1: 10.0.0.11
+2: 10.0.0.10
+3: 10.0.0.10
+Port ID:  0, 0 -> 1 : 17004
+Port ID:  1, 0 -> 1 : 17020
+Port ID:  2, 0 -> 1 : 17036
+Port ID:  3, 0 -> 1 : 17052
+Port ID:  0, 2 -> 1 : 17006
+Port ID:  1, 2 -> 1 : 17022
+Port ID:  0, 3 -> 1 : 17007
+Port ID:  1, 3 -> 1 : 17023
+[++++PRE++++]49
+[++++NOW++++]50
+Sock Binding to tcp://10.0.0.11:17020 1
+Sock Binding to tcp://10.0.0.11:17006 1
+Sock Binding to tcp://10.0.0.11:17052 1
+Sock Binding to tcp://10.0.0.11:17004 1
+Sock Binding to tcp://10.0.0.11:17023 1
+Sock Binding to tcp://10.0.0.11:17036 1
+Sock Binding to tcp://10.0.0.11:17022 1
+Sock Binding to tcp://10.0.0.11:17007 1
+Sock Binding to tcp://10.0.0.11:17020 1 End
+[32m[S9]Socket insert: {0}: 17020
+[0mSock Binding to tcp://10.0.0.11:17006 1 End
+[32m[C6]Socket insert: {2}: 17006
+[0mSock Binding to tcp://10.0.0.11:17004 1 End
+[32m[S8]Socket insert: {0}: 17004
+[0mSock Binding to tcp://10.0.0.11:17036 1 End
+[32m[S10]Socket insert: {0}: 17036
+[0mSock Binding to tcp://10.0.0.11:17052 1 End
+[32m[S11]Socket insert: {0}: 17052
+[0mSock Binding to tcp://10.0.0.11:17023 1 End
+[32m[C7]Socket insert: {3}: 17023
+[0mSock Binding to tcp://10.0.0.11:17022 1 End
+[32m[C7]Socket insert: {2}: 17022
+[0mSock Binding to tcp://10.0.0.11:17007 1 End
+[32m[C6]Socket insert: {3}: 17007
+[0mbreak
+Port ID:  0, 1 -> 0 : 17001
+Port ID:  1, 1 -> 0 : 17017
+Port ID:  2, 1 -> 0 : 17033
+Port ID:  3, 1 -> 0 : 17049
+Port ID:  0, 1 -> 2 : 17009
+Port ID:  1, 1 -> 2 : 17025
+Port ID:  2, 1 -> 2 : 17041
+Port ID:  3, 1 -> 2 : 17057
+Port ID:  0, 1 -> 3 : 17013
+Port ID:  1, 1 -> 3 : 17029
+Port ID:  2, 1 -> 3 : 17045
+Port ID:  3, 1 -> 3 : 17061
+Sock Connecting to tcp://10.0.0.11;10.0.0.10:17009 1 -> 2
+Sock Connecting to tcp://10.0.0.11;10.0.0.11:17033 1 -> 0
+Sock Connecting to tcp://10.0.0.11;10.0.0.11:17001 1 -> 0
+Sock Connecting to tcp://10.0.0.11;10.0.0.11:17017 1 -> 0
+Sock Connecting to tcp://10.0.0.11;10.0.0.11:17049 1 -> 0
+Sock Connecting to tcp://10.0.0.11;10.0.0.10:17041 1 -> 2
+Sock Connecting to tcp://10.0.0.11;10.0.0.10:17025 1 -> 2
+Sock Connecting to tcp://10.0.0.11;10.0.0.10:17029 1 -> 3
+Sock Connecting to tcp://10.0.0.11;10.0.0.10:17057 1 -> 2
+Sock Connecting to tcp://10.0.0.11;10.0.0.10:17061 1 -> 3
+Sock Connecting to tcp://10.0.0.11;10.0.0.10:17045 1 -> 3
+Sock Connecting to tcp://10.0.0.11;10.0.0.10:17009 1 -> 2 End
+[31m[S8]Socket insert: {2}: 17009
+[0mSock Connecting to tcp://10.0.0.11;10.0.0.10:17013 1 -> 3
+Sock Connecting to tcp://10.0.0.11;10.0.0.11:17017 1 -> 0 End
+[31m[S9]Socket insert: {0}: 17017
+[0mSock Connecting to tcp://10.0.0.11;10.0.0.11:17033 1 -> 0 End
+[31m[S10]Socket insert: {0}: 17033
+[0mSock Connecting to tcp://10.0.0.11;10.0.0.11:17001 1 -> 0 End
+[31m[S8]Socket insert: {0}: 17001
+[0mSock Connecting to tcp://10.0.0.11;10.0.0.10:17061 1 -> 3 End
+[31m[S11]Socket insert: {3}: 17061
+[0mSock Connecting to tcp://10.0.0.11;10.0.0.11:17049 1 -> 0 End
+[31m[S11]Socket insert: {0}: 17049
+[0mSock Connecting to tcp://10.0.0.11;10.0.0.10:17029 1 -> 3 End
+[31m[S9]Socket insert: {3}: 17029
+[0mSock Connecting to tcp://10.0.0.11;10.0.0.10:17057 1 -> 2 End
+[31m[S11]Socket insert: {2}: 17057
+[0mSock Connecting to tcp://10.0.0.11;10.0.0.10:17025 1 -> 2 End
+[31m[S9]Socket insert: {2}: 17025
+[0mSock Connecting to tcp://10.0.0.11;10.0.0.10:17041 1 -> 2 End
+[31m[S10]Socket insert: {2}: 17041
+[0mSock Connecting to tcp://10.0.0.11;10.0.0.10:17045 1 -> 3 End
+[31m[S10]Socket insert: {3}: 17045
+[0mSock Connecting to tcp://10.0.0.11;10.0.0.10:17013 1 -> 3 End
+[31m[S8]Socket insert: {3}: 17013
+[0m[31m/******** EVERYTHING IS OK ********/
+[0m[31mSEND: 12
+[0m[31mRECV: 8
+[0m[31m/******** EVERYTHING IS OK ********/
+[0m[31m[0 -> 8]
+[0mLocal LID = 3, QPN = 120336, PSN = 14207609
+Local Addr = 140197587251216, RKey = 2013336186, LEN = 1048576
+Remote LID = 3, QPN = 120319, PSN = 2116118
+Remote Addr = 139996044881936, RKey = 2013331834, LEN = 1048576
+[31m[0 -> 9]
+[0mLocal LID = 3, QPN = 120337, PSN = 6800625
+Local Addr = 140197588303888, RKey = 2013336442, LEN = 1048576
+Remote LID = 3, QPN = 120321, PSN = 6103629
+Remote Addr = 139996043829264, RKey = 2013332090, LEN = 1048576
+[31m[0 -> 10]
+[0mLocal LID = 3, QPN = 120338, PSN = 2809818
+Local Addr = 140197589356560, RKey = 2013335930, LEN = 1048576
+Remote LID = 3, QPN = 120320, PSN = 5515815
+Remote Addr = 139996042776592, RKey = 2013332346, LEN = 1048576
+[31m[0 -> 11]
+[0mLocal LID = 3, QPN = 120335, PSN = 4389417
+Local Addr = 140197586198544, RKey = 2013336698, LEN = 1048576
+Remote LID = 3, QPN = 120323, PSN = 0
+Remote Addr = 139996040671248, RKey = 2013332858, LEN = 1048576
+[31m[2 -> 8]
+[0mLocal LID = 3, QPN = 120339, PSN = 7114140
+Local Addr = 140197583511568, RKey = 2013337722, LEN = 1048576
+Remote LID = 10, QPN = 3408, PSN = 11225430
+Remote Addr = 140408396763152, RKey = 671155113, LEN = 1048576
+[31m[2 -> 9]
+[0mLocal LID = 3, QPN = 120345, PSN = 3021149
+Local Addr = 140197584564240, RKey = 2013337210, LEN = 1048576
+Remote LID = 10, QPN = 3407, PSN = 0
+Remote Addr = 140408398868496, RKey = 671154601, LEN = 1048576
+[31m[2 -> 10]
+[0mLocal LID = 3, QPN = 120349, PSN = 11939177
+Local Addr = 140197581144080, RKey = 2013339002, LEN = 1048576
+Remote LID = 10, QPN = 3415, PSN = 10238434
+Remote Addr = 140408393605136, RKey = 671156649, LEN = 1048576
+[31m[2 -> 11]
+[0mLocal LID = 3, QPN = 120348, PSN = 3062654
+Local Addr = 140197582196752, RKey = 2013338746, LEN = 1048576
+Remote LID = 10, QPN = 3412, PSN = 5515815
+Remote Addr = 140408391499792, RKey = 671156137, LEN = 1048576
+[31m[3 -> 8]
+[0mLocal LID = 3, QPN = 120355, PSN = 2839345
+Local Addr = 140197579960336, RKey = 2013339514, LEN = 1048576
+Remote LID = 10, QPN = 3429, PSN = 11225430
+Remote Addr = 139846183030800, RKey = 671160489, LEN = 1048576
+[31m[3 -> 9]
+[0mLocal LID = 3, QPN = 120353, PSN = 8497408
+Local Addr = 140197577408528, RKey = 2013340282, LEN = 1048576
+Remote LID = 10, QPN = 3425, PSN = 10238434
+Remote Addr = 139846187765776, RKey = 671158697, LEN = 1048576
+[31m[3 -> 10]
+[0mLocal LID = 3, QPN = 120347, PSN = 5067550
+Local Addr = 140197576077328, RKey = 2013340538, LEN = 1048576
+Remote LID = 10, QPN = 3431, PSN = 2809818
+Remote Addr = 139846181568528, RKey = 671161001, LEN = 1048576
+[31m[3 -> 11]
+[0mLocal LID = 3, QPN = 120351, PSN = 7064799
+Local Addr = 140197573918736, RKey = 2013341306, LEN = 1048576
+Remote LID = 10, QPN = 3428, PSN = 13658313
+Remote Addr = 139846186713104, RKey = 671159721, LEN = 1048576
+Local LID = 3, QPN = 120329, PSN = 0
+Local Addr = 140197667426320, RKey = 2013334138, LEN = 1048576
+Remote LID = 3, QPN = 120316, PSN = 8497408
+Remote Addr = 140370002018320, RKey = 939597945, LEN = 1048576
+Local LID = 3, QPN = 120328, PSN = 2116118
+Local Addr = 140197668478992, RKey = 2013333882, LEN = 1048576
+Remote LID = 10, QPN = 3386, PSN = 6800625
+Remote Addr = 140653791133712, RKey = 671158952, LEN = 1048576
+Local LID = 3, QPN = 120331, PSN = 10238434
+Local Addr = 140197594386448, RKey = 2013334906, LEN = 1048576
+Remote LID = 3, QPN = 120305, PSN = 4389417
+Remote Addr = 140370008915984, RKey = 939595641, LEN = 1048576
+Local LID = 3, QPN = 120334, PSN = 11581620
+Local Addr = 140197596491792, RKey = 2013335418, LEN = 1048576
+Remote LID = 3, QPN = 120304, PSN = 7114140
+Remote Addr = 140370006810640, RKey = 939596153, LEN = 1048576
+Local LID = 3, QPN = 120333, PSN = 5515815
+Local Addr = 140197593333776, RKey = 2013335162, LEN = 1048576
+Remote LID = 3, QPN = 120307, PSN = 2809818
+Remote Addr = 140370005749776, RKey = 939597177, LEN = 1048576
+Local LID = 3, QPN = 120332, PSN = 11225430
+Local Addr = 140197595439120, RKey = 2013335674, LEN = 1048576
+Remote LID = 10, QPN = 3406, PSN = 4389417
+Remote Addr = 140145236488208, RKey = 671162024, LEN = 1048576
+Local LID = 3, QPN = 120327, PSN = 13658313
+Local Addr = 140197666373648, RKey = 2013334394, LEN = 1048576
+Remote LID = 10, QPN = 3389, PSN = 8497408
+Remote Addr = 140653792186384, RKey = 671159464, LEN = 1048576
+Local LID = 3, QPN = 120330, PSN = 6103629
+Local Addr = 140197665320976, RKey = 2013334650, LEN = 1048576
+Remote LID = 10, QPN = 3403, PSN = 8497408
+Remote Addr = 140145237671952, RKey = 671161768, LEN = 1048576
+Status: 12
+Ibv_poll_cq error!
+Error: Success
+Running client...
+
+CC Alg 4
+g_done_timer 1000000
+g_thread_cnt 4
+g_abort_penalty 10000000
+g_zipf_theta 0.300000
+g_node_id 2
+g_client_rem_thread_cnt 2
+g_client_send_thread_cnt 2
+g_max_txn_per_part 500000
+g_load_per_server 100
+g_inflight_max 100
+g_mpr 1.000000
+g_mpitem 0.010000
+g_part_per_txn 2
+g_req_per_query 10
+g_client_node_cnt 2
+g_rem_thread_cnt 4
+g_send_thread_cnt 4
+g_client_thread_cnt 4
+g_num_wh 2
+g_perc_payment 0.000000
+g_wh_update 1
+g_part_cnt 2
+g_node_cnt 2
+g_thread_cnt 4
+g_query_intvl 1
+g_prt_lat_distr 0
+g_part_alloc 0
+g_mem_pad 1
+g_perc_multi_part 1.000000
+g_tup_read_perc 1.000000
+g_tup_write_perc 0.000000
+g_txn_read_perc 1.000000
+g_txn_write_perc 0.000000
+g_synth_table_size 65536
+g_max_part_key 20000
+g_max_product_key 2000
+g_max_supplier_key 2000
+g_field_per_tuple 10
+g_data_perc 100.000000
+g_access_perc 0.030000
+g_strict_ppt 0
+g_network_delay 0
+g_total_thread_cnt 13
+g_total_client_thread_cnt 8
+g_total_node_cnt 4
+g_seq_batch_time_limit 5000000
+Node 2: servicing 1 total nodes starting with node 0
+Random seed: 2288598835374223
+Initializing stats... Done
+Initializing transport manager... Tport Init 2: 10
+Reading ifconfig file: ./ifconfig.txt
+0: 10.0.0.11
+1: 10.0.0.11
+2: 10.0.0.10
+3: 10.0.0.10
+Port ID:  0, 0 -> 2 : 17008
+Port ID:  1, 0 -> 2 : 17024
+Port ID:  2, 0 -> 2 : 17040
+Port ID:  3, 0 -> 2 : 17056
+Port ID:  0, 1 -> 2 : 17009
+Port ID:  1, 1 -> 2 : 17025
+Port ID:  2, 1 -> 2 : 17041
+Port ID:  3, 1 -> 2 : 17057
+Port ID:  0, 3 -> 2 : 17011
+Port ID:  1, 3 -> 2 : 17027
+[++++PRE++++]50
+[++++NOW++++]51
+Sock Binding to tcp://10.0.0.10:17025 2
+Sock Binding to tcp://10.0.0.10:17024 2
+Sock Binding to tcp://10.0.0.10:17057 2
+Sock Binding to tcp://10.0.0.10:17041 2
+Sock Binding to tcp://10.0.0.10:17009 2
+Sock Binding to tcp://10.0.0.10:17011 2
+Sock Binding to tcp://10.0.0.10:17008 2
+Sock Binding to tcp://10.0.0.10:17040 2
+Sock Binding to tcp://10.0.0.10:17056 2
+Sock Binding to tcp://10.0.0.10:17025 2 End
+[32m[S9]Socket insert: {1}: 17025
+[0mSock Binding to tcp://10.0.0.10:17027 2
+Sock Binding to tcp://10.0.0.10:17024 2 End
+[32m[S9]Socket insert: {0}: 17024
+[0mSock Binding to tcp://10.0.0.10:17041 2 End
+[32m[S10]Socket insert: {1}: 17041
+[0mSock Binding to tcp://10.0.0.10:17057 2 End
+[32m[S11]Socket insert: {1}: 17057
+[0mSock Binding to tcp://10.0.0.10:17011 2 End
+[32m[C6]Socket insert: {3}: 17011
+[0mSock Binding to tcp://10.0.0.10:17009 2 End
+[32m[S8]Socket insert: {1}: 17009
+[0mSock Binding to tcp://10.0.0.10:17040 2 End
+[32m[S10]Socket insert: {0}: 17040
+[0mSock Binding to tcp://10.0.0.10:17008 2 End
+[32m[S8]Socket insert: {0}: 17008
+[0mSock Binding to tcp://10.0.0.10:17027 2 End
+[32m[C7]Socket insert: {3}: 17027
+[0mSock Binding to tcp://10.0.0.10:17056 2 End
+[32m[S11]Socket insert: {0}: 17056
+[0mbreak
+Port ID:  0, 2 -> 0 : 17002
+Port ID:  1, 2 -> 0 : 17018
+Port ID:  0, 2 -> 1 : 17006
+Port ID:  1, 2 -> 1 : 17022
+Port ID:  0, 2 -> 3 : 17014
+Port ID:  1, 2 -> 3 : 17030
+Sock Connecting to tcp://10.0.0.10;10.0.0.11:17018 2 -> 0
+Sock Connecting to tcp://10.0.0.10;10.0.0.10:17014 2 -> 3
+Sock Connecting to tcp://10.0.0.10;10.0.0.11:17002 2 -> 0
+Sock Connecting to tcp://10.0.0.10;10.0.0.11:17006 2 -> 1
+Sock Connecting to tcp://10.0.0.10;10.0.0.10:17030 2 -> 3
+Sock Connecting to tcp://10.0.0.10;10.0.0.11:17022 2 -> 1
+Sock Connecting to tcp://10.0.0.10;10.0.0.11:17018 2 -> 0 End
+[31m[C7]Socket insert: {0}: 17018
+[0mSock Connecting to tcp://10.0.0.10;10.0.0.11:17002 2 -> 0 End
+[31m[C6]Socket insert: {0}: 17002
+[0mSock Connecting to tcp://10.0.0.10;10.0.0.10:17014 2 -> 3 End
+[31m[C6]Socket insert: {3}: 17014
+[0mSock Connecting to tcp://10.0.0.10;10.0.0.11:17006 2 -> 1 End
+[31m[C6]Socket insert: {1}: 17006
+[0mSock Connecting to tcp://10.0.0.10;10.0.0.10:17030 2 -> 3 End
+[31m[C7]Socket insert: {3}: 17030
+[0mSock Connecting to tcp://10.0.0.10;10.0.0.11:17022 2 -> 1 End
+[31m[C7]Socket insert: {1}: 17022
+[0m[31m/******** EVERYTHING IS OK ********/
+[0m[31mSEND: 6
+[0m[31mRECV: 10
+[0m[31m/******** EVERYTHING IS OK ********/
+[0m[31m[0 -> 6]
+[0mLocal LID = 10, QPN = 3418, PSN = 4389417
+Local Addr = 140406218309648, RKey = 671157929, LEN = 1048576
+Remote LID = 3, QPN = 120325, PSN = 10238434
+Remote Addr = 139996036972560, RKey = 2013333626, LEN = 1048576
+[31m[0 -> 7]
+[0mLocal LID = 10, QPN = 3417, PSN = 14207609
+Local Addr = 140406217125904, RKey = 671158441, LEN = 1048576
+Remote LID = 3, QPN = 120322, PSN = 13658313
+Remote Addr = 139996041723920, RKey = 2013332602, LEN = 1048576
+[31m[1 -> 6]
+[0mLocal LID = 10, QPN = 3419, PSN = 11939177
+Local Addr = 140406219362320, RKey = 671157417, LEN = 1048576
+Remote LID = 3, QPN = 120328, PSN = 2116118
+Remote Addr = 140197668478992, RKey = 2013333882, LEN = 1048576
+[31m[1 -> 7]
+[0mLocal LID = 10, QPN = 3422, PSN = 8497408
+Local Addr = 140406214889488, RKey = 671159209, LEN = 1048576
+Remote LID = 3, QPN = 120327, PSN = 13658313
+Remote Addr = 140197666373648, RKey = 2013334394, LEN = 1048576
+[31m[3 -> 6]
+[0mLocal LID = 10, QPN = 3421, PSN = 6800625
+Local Addr = 140406216073232, RKey = 671158953, LEN = 1048576
+Remote LID = 10, QPN = 3393, PSN = 11225430
+Remote Addr = 140145250525200, RKey = 671158696, LEN = 1048576
+[31m[3 -> 7]
+[0mLocal LID = 10, QPN = 3420, PSN = 3021149
+Local Addr = 140406213574672, RKey = 671159465, LEN = 1048576
+Remote LID = 10, QPN = 3400, PSN = 2809818
+Remote Addr = 140145249472528, RKey = 671159720, LEN = 1048576
+Local LID = 10, QPN = 3407, PSN = 0
+Local Addr = 140408398868496, RKey = 671154601, LEN = 1048576
+Remote LID = 3, QPN = 120302, PSN = 3062654
+Remote Addr = 139800998014992, RKey = 939595897, LEN = 1048576
+Local LID = 10, QPN = 3409, PSN = 2116118
+Local Addr = 140408397815824, RKey = 671154857, LEN = 1048576
+Remote LID = 3, QPN = 120306, PSN = 6800625
+Remote Addr = 140370004549648, RKey = 939597689, LEN = 1048576
+Local LID = 10, QPN = 3415, PSN = 10238434
+Local Addr = 140408393605136, RKey = 671156649, LEN = 1048576
+Remote LID = 3, QPN = 120297, PSN = 14207609
+Remote Addr = 139801003032592, RKey = 939594873, LEN = 1048576
+Local LID = 10, QPN = 3412, PSN = 5515815
+Local Addr = 140408391499792, RKey = 671156137, LEN = 1048576
+Remote LID = 3, QPN = 120300, PSN = 8497408
+Remote Addr = 139801001979920, RKey = 939595385, LEN = 1048576
+Local LID = 10, QPN = 3411, PSN = 11581620
+Local Addr = 140408392552464, RKey = 671155625, LEN = 1048576
+Remote LID = 10, QPN = 3404, PSN = 3021149
+Remote Addr = 140145234878480, RKey = 671162280, LEN = 1048576
+Local LID = 10, QPN = 3408, PSN = 11225430
+Local Addr = 140408396763152, RKey = 671155113, LEN = 1048576
+Remote LID = 3, QPN = 120299, PSN = 6800625
+Remote Addr = 139801000661008, RKey = 939595129, LEN = 1048576
+Local LID = 10, QPN = 3414, PSN = 6103629
+Local Addr = 140408394657808, RKey = 671155881, LEN = 1048576
+Remote LID = 3, QPN = 120309, PSN = 14207609
+Remote Addr = 140370000834576, RKey = 939598969, LEN = 1048576
+Local LID = 10, QPN = 3410, PSN = 13658313
+Local Addr = 140408395710480, RKey = 671155369, LEN = 1048576
+Remote LID = 3, QPN = 120313, PSN = 3021149
+Remote Addr = 140370007863312, RKey = 939596409, LEN = 1048576
+Local LID = 10, QPN = 3416, PSN = 2809818
+Local Addr = 140408389394448, RKey = 671156905, LEN = 1048576
+Remote LID = 10, QPN = 3405, PSN = 11939177
+Remote Addr = 140145233694736, RKey = 671162536, LEN = 1048576
+Local LID = 10, QPN = 3413, PSN = 7114140
+Local Addr = 140408390447120, RKey = 671156393, LEN = 1048576
+Remote LID = 3, QPN = 120310, PSN = 3062654
+Remote Addr = 140370003070992, RKey = 939598457, LEN = 1048576
+Status: 12
+Ibv_poll_cq error!
+Error: Success
+Running client...
+
+CC Alg 4
+g_done_timer 1000000
+g_thread_cnt 4
+g_abort_penalty 10000000
+g_zipf_theta 0.300000
+g_node_id 3
+g_client_rem_thread_cnt 2
+g_client_send_thread_cnt 2
+g_max_txn_per_part 500000
+g_load_per_server 100
+g_inflight_max 100
+g_mpr 1.000000
+g_mpitem 0.010000
+g_part_per_txn 2
+g_req_per_query 10
+g_client_node_cnt 2
+g_rem_thread_cnt 4
+g_send_thread_cnt 4
+g_client_thread_cnt 4
+g_num_wh 2
+g_perc_payment 0.000000
+g_wh_update 1
+g_part_cnt 2
+g_node_cnt 2
+g_thread_cnt 4
+g_query_intvl 1
+g_prt_lat_distr 0
+g_part_alloc 0
+g_mem_pad 1
+g_perc_multi_part 1.000000
+g_tup_read_perc 1.000000
+g_tup_write_perc 0.000000
+g_txn_read_perc 1.000000
+g_txn_write_perc 0.000000
+g_synth_table_size 65536
+g_max_part_key 20000
+g_max_product_key 2000
+g_max_supplier_key 2000
+g_field_per_tuple 10
+g_data_perc 100.000000
+g_access_perc 0.030000
+g_strict_ppt 0
+g_network_delay 0
+g_total_thread_cnt 13
+g_total_client_thread_cnt 8
+g_total_node_cnt 4
+g_seq_batch_time_limit 5000000
+Node 3: servicing 1 total nodes starting with node 1
+Random seed: 2288605998864107
+Initializing stats... Done
+Initializing transport manager... Tport Init 3: 10
+Reading ifconfig file: ./ifconfig.txt
+0: 10.0.0.11
+1: 10.0.0.11
+2: 10.0.0.10
+3: 10.0.0.10
+Port ID:  0, 0 -> 3 : 17012
+Port ID:  1, 0 -> 3 : 17028
+Port ID:  2, 0 -> 3 : 17044
+Port ID:  3, 0 -> 3 : 17060
+Port ID:  0, 1 -> 3 : 17013
+Port ID:  1, 1 -> 3 : 17029
+Port ID:  2, 1 -> 3 : 17045
+Port ID:  3, 1 -> 3 : 17061
+Port ID:  0, 2 -> 3 : 17014
+Port ID:  1, 2 -> 3 : 17030
+[++++PRE++++]51
+[++++NOW++++]52
+break
+Port ID:  0, 3 -> 0 : 17003
+Port ID:  1, 3 -> 0 : 17019
+Port ID:  0, 3 -> 1 : 17007
+Port ID:  1, 3 -> 1 : 17023
+Port ID:  0, 3 -> 2 : 17011
+Port ID:  1, 3 -> 2 : 17027
+Sock Binding to tcp://10.0.0.10:17044 3
+Sock Binding to tcp://10.0.0.10:17030 3
+Sock Binding to tcp://10.0.0.10:17012 3
+Sock Binding to tcp://10.0.0.10:17029 3
+Sock Binding to tcp://10.0.0.10:17013 3
+Sock Connecting to tcp://10.0.0.10;10.0.0.11:17003 3 -> 0
+Sock Binding to tcp://10.0.0.10:17061 3
+Sock Binding to tcp://10.0.0.10:17014 3
+Sock Binding to tcp://10.0.0.10:17028 3
+Sock Binding to tcp://10.0.0.10:17045 3
+Sock Binding to tcp://10.0.0.10:17060 3
+Sock Binding to tcp://10.0.0.10:17029 3 End
+[32m[S9]Socket insert: {1}: 17029
+[0mSock Binding to tcp://10.0.0.10:17044 3 End
+[32m[S10]Socket insert: {0}: 17044
+[0mSock Connecting to tcp://10.0.0.10;10.0.0.11:17007 3 -> 1
+Sock Connecting to tcp://10.0.0.10;10.0.0.11:17019 3 -> 0
+Sock Binding to tcp://10.0.0.10:17013 3 End
+[32m[S8]Socket insert: {1}: 17013
+[0mSock Binding to tcp://10.0.0.10:17060 3 End
+[32m[S11]Socket insert: {0}: 17060
+[0mSock Connecting to tcp://10.0.0.10;10.0.0.11:17003 3 -> 0 End
+[31m[C6]Socket insert: {0}: 17003
+[0mSock Binding to tcp://10.0.0.10:17030 3 End
+[32m[C7]Socket insert: {2}: 17030
+[0mSock Binding to tcp://10.0.0.10:17012 3 End
+[32m[S8]Socket insert: {0}: 17012
+[0mSock Binding to tcp://10.0.0.10:17061 3 End
+[32m[S11]Socket insert: {1}: 17061
+[0mSock Connecting to tcp://10.0.0.10;10.0.0.11:17023 3 -> 1
+Sock Connecting to tcp://10.0.0.10;10.0.0.10:17011 3 -> 2
+Sock Connecting to tcp://10.0.0.10;10.0.0.10:17027 3 -> 2
+Sock Connecting to tcp://10.0.0.10;10.0.0.11:17007 3 -> 1 End
+[31m[C6]Socket insert: {1}: 17007
+[0mSock Binding to tcp://10.0.0.10:17028 3 End
+[32m[S9]Socket insert: {0}: 17028
+[0mSock Binding to tcp://10.0.0.10:17045 3 End
+[32m[S10]Socket insert: {1}: 17045
+[0mSock Binding to tcp://10.0.0.10:17014 3 End
+[32m[C6]Socket insert: {2}: 17014
+[0mSock Connecting to tcp://10.0.0.10;10.0.0.11:17019 3 -> 0 End
+[31m[C7]Socket insert: {0}: 17019
+[0mSock Connecting to tcp://10.0.0.10;10.0.0.11:17023 3 -> 1 End
+[31m[C7]Socket insert: {1}: 17023
+[0mSock Connecting to tcp://10.0.0.10;10.0.0.10:17011 3 -> 2 End
+[31m[C6]Socket insert: {2}: 17011
+[0mSock Connecting to tcp://10.0.0.10;10.0.0.10:17027 3 -> 2 End
+[31m[C7]Socket insert: {2}: 17027
+[0m[31m/******** EVERYTHING IS OK ********/
+[0m[31mSEND: 6
+[0m[31mRECV: 10
+[0m[31m/******** EVERYTHING IS OK ********/
+[0m[31m[0 -> 6]
+[0mLocal LID = 10, QPN = 3433, PSN = 11581620
+Local Addr = 139846178660368, RKey = 671161257, LEN = 1048576
+Remote LID = 3, QPN = 120324, PSN = 11225430
+Remote Addr = 139996039208976, RKey = 2013333114, LEN = 1048576
+[31m[0 -> 7]
+[0mLocal LID = 10, QPN = 3434, PSN = 4389417
+Local Addr = 139846176354320, RKey = 671161513, LEN = 1048576
+Remote LID = 3, QPN = 120326, PSN = 11581620
+Remote Addr = 139996038025232, RKey = 2013333370, LEN = 1048576
+[31m[1 -> 6]
+[0mLocal LID = 10, QPN = 3436, PSN = 6800625
+Local Addr = 139846174314512, RKey = 671161769, LEN = 1048576
+Remote LID = 3, QPN = 120330, PSN = 6103629
+Remote Addr = 140197665320976, RKey = 2013334650, LEN = 1048576
+[31m[1 -> 7]
+[0mLocal LID = 10, QPN = 3437, PSN = 11939177
+Local Addr = 139846173261840, RKey = 671162025, LEN = 1048576
+Remote LID = 3, QPN = 120332, PSN = 11225430
+Remote Addr = 140197595439120, RKey = 2013335674, LEN = 1048576
+[31m[2 -> 6]
+[0mLocal LID = 10, QPN = 3435, PSN = 3021149
+Local Addr = 139846171394064, RKey = 671162281, LEN = 1048576
+Remote LID = 10, QPN = 3411, PSN = 11581620
+Remote Addr = 140408392552464, RKey = 671155625, LEN = 1048576
+[31m[2 -> 7]
+[0mLocal LID = 10, QPN = 3438, PSN = 8497408
+Local Addr = 139846169772048, RKey = 671162537, LEN = 1048576
+Remote LID = 10, QPN = 3416, PSN = 2809818
+Remote Addr = 140408389394448, RKey = 671156905, LEN = 1048576
+Local LID = 10, QPN = 3425, PSN = 10238434
+Local Addr = 139846187765776, RKey = 671158697, LEN = 1048576
+Remote LID = 3, QPN = 120311, PSN = 2839345
+Remote Addr = 139800990654480, RKey = 939598713, LEN = 1048576
+Local LID = 10, QPN = 3423, PSN = 0
+Local Addr = 139846189871120, RKey = 671157673, LEN = 1048576
+Remote LID = 3, QPN = 120315, PSN = 11939177
+Remote Addr = 140369930608656, RKey = 939599481, LEN = 1048576
+Local LID = 10, QPN = 3429, PSN = 11225430
+Local Addr = 139846183030800, RKey = 671160489, LEN = 1048576
+Remote LID = 3, QPN = 120301, PSN = 4389417
+Remote Addr = 139800996962320, RKey = 939596921, LEN = 1048576
+Local LID = 10, QPN = 3432, PSN = 14207609
+Local Addr = 139846180515856, RKey = 671160745, LEN = 1048576
+Remote LID = 3, QPN = 120317, PSN = 5067550
+Remote Addr = 140369927290896, RKey = 939599993, LEN = 1048576
+Local LID = 10, QPN = 3430, PSN = 2116118
+Local Addr = 139846184214544, RKey = 671160233, LEN = 1048576
+Remote LID = 10, QPN = 3420, PSN = 3021149
+Remote Addr = 140406213574672, RKey = 671159465, LEN = 1048576
+Local LID = 10, QPN = 3424, PSN = 5515815
+Local Addr = 139846190923792, RKey = 671157161, LEN = 1048576
+Remote LID = 3, QPN = 120318, PSN = 2839345
+Remote Addr = 140369929555984, RKey = 939599737, LEN = 1048576
+Local LID = 10, QPN = 3428, PSN = 13658313
+Local Addr = 139846186713104, RKey = 671159721, LEN = 1048576
+Remote LID = 3, QPN = 120308, PSN = 7064799
+Remote Addr = 139800994414608, RKey = 939597433, LEN = 1048576
+Local LID = 10, QPN = 3426, PSN = 7114140
+Local Addr = 139846188818448, RKey = 671158185, LEN = 1048576
+Remote LID = 3, QPN = 120312, PSN = 7064799
+Remote Addr = 140369932054544, RKey = 939599225, LEN = 1048576
+Local LID = 10, QPN = 3431, PSN = 2809818
+Local Addr = 139846181568528, RKey = 671161001, LEN = 1048576
+Remote LID = 3, QPN = 120314, PSN = 5067550
+Remote Addr = 139800992256016, RKey = 939598201, LEN = 1048576
+Local LID = 10, QPN = 3427, PSN = 6103629
+Local Addr = 139846185660432, RKey = 671159977, LEN = 1048576
+Remote LID = 10, QPN = 3421, PSN = 6800625
+Remote Addr = 140406216073232, RKey = 671158953, LEN = 1048576
+Status: 12
+Ibv_poll_cq error!
+Error: Success

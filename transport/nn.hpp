@@ -78,9 +78,32 @@ namespace nn
             // assert (rc == 0);
         }
 
+        inline void print_pair_info_local() 
+        {   
+            printf("Local LID = %d, QPN = %d, PSN = %d\n",
+               ibv_res.lparam[0]->lid, ibv_res.lparam[0]->qpn, ibv_res.lparam[0]->psn);
+            printf("Local Addr = %ld, RKey = %d, LEN = %zu\n",
+               ibv_res.lpriv_data[0]->buffer_addr, ibv_res.lpriv_data[0]->buffer_rkey,
+               ibv_res.lpriv_data[0]->buffer_length);
+        }
+
+        inline void print_pair_info_remote() 
+        {   
+            printf("Remote LID = %d, QPN = %d, PSN = %d\n",
+               ibv_res.rparam[0]->lid, ibv_res.rparam[0]->qpn, ibv_res.rparam[0]->psn);
+            printf("Remote Addr = %ld, RKey = %d, LEN = %zu\n",
+               ibv_res.rpriv_data[0]->buffer_addr, ibv_res.rpriv_data[0]->buffer_rkey,
+               ibv_res.rpriv_data[0]->buffer_length);
+        }
+
         inline void *get_send_buffer_addr() 
         {
             return (void *)rdma_send_buffer;
+        }
+
+        inline void *get_recv_buffer_addr() 
+        {
+            return (void *)rdma_recv_buffer;
         }
 
         inline void setsockopt (int level, int option, const void *optval,
@@ -115,6 +138,13 @@ namespace nn
             return 0;
         }
 
+        inline int write (const void *buf, size_t len, int flags)
+        {
+
+            m_post_write_offset_sig_imm(&ibv_res, rdma_send_buffer, len, 0, (uint64_t)len, 0);
+            m_poll_send_cq(&ibv_res, 0);
+            return 0;
+        }
 #if 0
         inline int send (const void *buf, size_t len, int flags)
         {
@@ -137,39 +167,40 @@ namespace nn
             // m_nano_sleep(100000000);
             REDLOG("[BEGIN SEND]\n");
             m_post_send_imm(&ibv_res, (char *)buf, NN_STATIC_SIZE, len, 0);
-            m_poll_send_cq_once(&ibv_res, 0);
+            // m_poll_send_cq_once(&ibv_res, 0);
+            m_poll_send_cq(&ibv_res, 0);
             REDLOG("[END SEND]\n");
             return 0;
         }
 
-        inline int recv (void **buf_ptr, size_t len, int flags)
-        {
-            // int rc = nn_recv (s, buf, len, flags);
-            
-            REDLOG("[BEGIN RECV]\n");
-            int res = static_cast<int>(m_poll_recv_cq_with_data_once(&ibv_res, 0));
-            REDLOG("[END RECV]%d\n", res);
-
-            if (res != -1) m_post_recv(&ibv_res, rdma_recv_buffer, NN_STATIC_SIZE, 0);
-
-            *(char **)buf_ptr = rdma_recv_buffer;
-
-            return res;
-        }
         // inline int recv (void **buf_ptr, size_t len, int flags)
         // {
         //     // int rc = nn_recv (s, buf, len, flags);
             
         //     REDLOG("[BEGIN RECV]\n");
-        //     int res = static_cast<int>(m_poll_recv_cq_with_data(&ibv_res, 0));
+        //     int res = static_cast<int>(m_poll_recv_cq_with_data_once(&ibv_res, 0));
         //     REDLOG("[END RECV]%d\n", res);
 
-        //     m_post_recv(&ibv_res, rdma_recv_buffer, NN_STATIC_SIZE, 0);
+        //     if (res != -1) m_post_recv(&ibv_res, rdma_recv_buffer, NN_STATIC_SIZE, 0);
 
         //     *(char **)buf_ptr = rdma_recv_buffer;
 
         //     return res;
         // }
+        inline int recv (void **buf_ptr, size_t len, int flags)
+        {
+            // int rc = nn_recv (s, buf, len, flags);
+            
+            REDLOG("[BEGIN RECV]\n");
+            int res = static_cast<int>(m_poll_recv_cq_with_data(&ibv_res, 0));
+            REDLOG("[END RECV]%d\n", res);
+
+            m_post_recv(&ibv_res, rdma_recv_buffer, NN_STATIC_SIZE, 0);
+
+            *(char **)buf_ptr = rdma_recv_buffer;
+
+            return res;
+        }
 
 #endif
 /*        inline int sendmsg (const struct nn_msghdr *msghdr, int flags)

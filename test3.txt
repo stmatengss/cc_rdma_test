@@ -1,0 +1,119 @@
+Running client...
+
+CC Alg 4
+g_done_timer 1000000
+g_thread_cnt 1
+g_abort_penalty 10000000
+g_zipf_theta 0.300000
+g_node_id 2
+g_client_rem_thread_cnt 1
+g_client_send_thread_cnt 1
+g_max_txn_per_part 500000
+g_load_per_server 100
+g_inflight_max 100
+g_mpr 1.000000
+g_mpitem 0.010000
+g_part_per_txn 2
+g_req_per_query 10
+g_client_node_cnt 2
+g_rem_thread_cnt 1
+g_send_thread_cnt 1
+g_client_thread_cnt 1
+g_num_wh 2
+g_perc_payment 0.000000
+g_wh_update 1
+g_part_cnt 2
+g_node_cnt 2
+g_thread_cnt 1
+g_query_intvl 1
+g_prt_lat_distr 0
+g_part_alloc 0
+g_mem_pad 1
+g_perc_multi_part 1.000000
+g_tup_read_perc 1.000000
+g_tup_write_perc 0.000000
+g_txn_read_perc 1.000000
+g_txn_write_perc 0.000000
+g_synth_table_size 65536
+g_max_part_key 20000
+g_max_product_key 2000
+g_max_supplier_key 2000
+g_field_per_tuple 10
+g_data_perc 100.000000
+g_access_perc 0.030000
+g_strict_ppt 0
+g_network_delay 0
+g_total_thread_cnt 4
+g_total_client_thread_cnt 3
+g_total_node_cnt 4
+g_seq_batch_time_limit 5000000
+Node 2: servicing 1 total nodes starting with node 0
+Random seed: 2289365329319815
+Initializing stats... Done
+Initializing transport manager... Tport Init 2: 9
+Reading ifconfig file: ./ifconfig.txt
+0: 10.0.0.11
+1: 10.0.0.11
+2: 10.0.0.10
+3: 10.0.0.10
+Port ID:  0, 0 -> 2 : 17008
+[++++PRE++++]50
+[++++NOW++++]51
+Port ID:  0, 1 -> 2 : 17009
+Port ID:  0, 3 -> 2 : 17011
+Sock Binding to tcp://10.0.0.10:17009 2
+Sock Binding to tcp://10.0.0.10:17008 2
+Sock Binding to tcp://10.0.0.10:17011 2
+Sock Binding to tcp://10.0.0.10:17009 2 End
+[32m[S2]Socket insert: {1}: 17009
+[0mSock Binding to tcp://10.0.0.10:17008 2 End
+[32m[S2]Socket insert: {0}: 17008
+[0mSock Binding to tcp://10.0.0.10:17011 2 End
+[32m[C2]Socket insert: {3}: 17011
+[0mbreak
+Port ID:  0, 2 -> 0 : 17002
+Port ID:  0, 2 -> 1 : 17006
+Port ID:  0, 2 -> 3 : 17014
+Sock Connecting to tcp://10.0.0.10;10.0.0.11:17002 2 -> 0
+Sock Connecting to tcp://10.0.0.10;10.0.0.11:17006 2 -> 1
+Sock Connecting to tcp://10.0.0.10;10.0.0.10:17014 2 -> 3
+Sock Connecting to tcp://10.0.0.10;10.0.0.11:17006 2 -> 1 End
+[31m[C2]Socket insert: {1}: 17006
+[0mSock Connecting to tcp://10.0.0.10;10.0.0.10:17014 2 -> 3 End
+[31m[C2]Socket insert: {3}: 17014
+[0mSock Connecting to tcp://10.0.0.10;10.0.0.11:17002 2 -> 0 End
+[31m[C2]Socket insert: {0}: 17002
+[0m[31m/******** EVERYTHING IS OK ********/
+[0m[31mSEND: 3
+[0m[31mRECV: 3
+[0m[31m/******** EVERYTHING IS OK ********/
+[0m[31m[0 -> 2]
+[0mLocal LID = 10, QPN = 3472, PSN = 10238434
+Local Addr = 140670470098960, RKey = 402719915, LEN = 1048576
+Remote LID = 3, QPN = 120396, PSN = 2116118
+Remote Addr = 139998118596624, RKey = -671022468, LEN = 1048576
+[31m[1 -> 2]
+[0mLocal LID = 10, QPN = 3473, PSN = 11225430
+Local Addr = 140670469046288, RKey = 402720171, LEN = 1048576
+Remote LID = 3, QPN = 120398, PSN = 0
+Remote Addr = 140033892790288, RKey = -671021956, LEN = 1048576
+[31m[3 -> 2]
+[0mLocal LID = 10, QPN = 3474, PSN = 11581620
+Local Addr = 140670467993616, RKey = 402720939, LEN = 1048576
+Remote LID = 10, QPN = 3465, PSN = 2116118
+Remote Addr = 140102889193488, RKey = -1207891542, LEN = 1048576
+Local LID = 10, QPN = 3469, PSN = 0
+Local Addr = 140670473039888, RKey = 402719403, LEN = 1048576
+Remote LID = 3, QPN = 120389, PSN = 10238434
+Remote Addr = 140195865890832, RKey = 2013333628, LEN = 1048576
+Local LID = 10, QPN = 3470, PSN = 2116118
+Local Addr = 140670474092560, RKey = 402719147, LEN = 1048576
+Remote LID = 3, QPN = 120394, PSN = 11581620
+Remote Addr = 139856751841296, RKey = 2013334396, LEN = 1048576
+Local LID = 10, QPN = 3471, PSN = 5515815
+Local Addr = 140670471987216, RKey = 402719659, LEN = 1048576
+Remote LID = 10, QPN = 3467, PSN = 10238434
+Remote Addr = 140102886809616, RKey = -1207891030, LEN = 1048576
+Status: 12
+Ibv_poll_cq error!
+Error: Success

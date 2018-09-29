@@ -233,11 +233,11 @@ void Transport::init() {
     }
   }
 
-  ipc.incre();
-  ipc.wait();
-  if (g_node_id == 0) {
-    ipc.clear();
-  }
+  // ipc.incre();
+  // ipc.wait();
+  // if (g_node_id == 0) {
+  //   ipc.clear();
+  // }
 
   for(uint64_t node_id = 0; node_id < g_total_node_cnt; node_id++) {
     if(node_id == g_node_id)
@@ -282,6 +282,36 @@ void Transport::init() {
   // ipc.wait();
 
   REDLOG("/******** EVERYTHING IS OK ********/\n");
+
+  REDLOG("SEND: %d\n", send_sockets.size());
+  REDLOG("RECV: %d\n", recv_sockets.size());
+
+  REDLOG("/******** EVERYTHING IS OK ********/\n");
+
+  for (auto &socket: send_sockets) {
+    REDLOG("[%d -> %d]\n", socket.first.first, socket.first.second);
+    socket.second->sock.print_pair_info_local();
+    socket.second->sock.print_pair_info_remote();
+  }
+  for (auto &socket: recv_sockets) {
+    // REDLOG("[%d -> %d]\n", socket.first.first, socket.first.second);
+    socket->sock.print_pair_info_local();
+    socket->sock.print_pair_info_remote();
+  }
+  
+  for (auto &socket: send_sockets) {
+    void * buf = socket.second->sock.get_send_buffer_addr();
+    socket.second->sock.write(buf, 32, 0);
+  }
+
+  for (auto &socket: send_sockets) {
+    printf("%s\n", (char *)(socket.second->sock.get_recv_buffer_addr()));
+  }
+
+
+  // sleep(2);
+
+  // exit(-1);
 
 	fflush(stdout);
 }

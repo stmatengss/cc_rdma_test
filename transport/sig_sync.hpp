@@ -41,13 +41,15 @@ public:
 
     void wait() {
         while(true) {
-            fd = open(f, O_RDONLY, S_IRUSR | S_IWUSR);
-            read(fd, counter, 1);
+            // fd = open(f, O_RDONLY, S_IRUSR | S_IWUSR);
+            std::ifstream in(f);
+            in >> counter;
+            
             if (int(*counter) == '0' + n_process) {
                 printf("break\n");
                 break;
             }
-            close(fd);
+            in.close();
         }
     }
 };
