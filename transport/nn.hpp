@@ -43,6 +43,8 @@ extern "C"{
 #define nn_slow(x) (x)
 #endif
 
+#define NN_STATIC_SIZE 512
+
 namespace nn
 {
     class socket
@@ -93,6 +95,8 @@ namespace nn
             ibv_res.is_server = 1;
             m_sync(&ibv_res, "", rdma_buffer);
 
+            m_post_multi_recv(&ibv_res, rdma_recv_buffer, NN_STATIC_SIZE, RDMA_CYC_QP_NUM - 1, 0);
+
             m_modify_qp_to_rts_and_rtr(&ibv_res);
 
             return 0;
@@ -104,25 +108,70 @@ namespace nn
             ibv_res.is_server = 0;
             m_sync(&ibv_res, addr, rdma_buffer);
 
+            m_post_multi_recv(&ibv_res, rdma_recv_buffer, NN_STATIC_SIZE, RDMA_CYC_QP_NUM - 1, 0);
+
             m_modify_qp_to_rts_and_rtr(&ibv_res);
 
             return 0;
         }
 
+#if 0
         inline int send (const void *buf, size_t len, int flags)
         {
+            // m_nano_sleep(100000000);
+
             m_post_write_offset_sig_imm(&ibv_res, rdma_send_buffer, len, 0, (uint64_t)len, 0);
             m_poll_send_cq(&ibv_res, 0);
             return 0;
         }
 
-        inline int recv (void *buf, size_t len, int flags)
+        inline int recv (void **buf_ptr, size_t len, int flags)
         {
             // int rc = nn_recv (s, buf, len, flags);
-            buf = rdma_recv_buffer;
+            *(char **)buf_ptr = rdma_recv_buffer;
             return  static_cast<int>(m_poll_recv_cq_with_data(&ibv_res, 0));
         }
+#else
+        inline int send (const void *buf, size_t len, int flags)
+        {
+            // m_nano_sleep(100000000);
+            REDLOG("[BEGIN SEND]\n");
+            m_post_send_imm(&ibv_res, (char *)buf, NN_STATIC_SIZE, len, 0);
+            m_poll_send_cq_once(&ibv_res, 0);
+            REDLOG("[END SEND]\n");
+            return 0;
+        }
 
+        inline int recv (void **buf_ptr, size_t len, int flags)
+        {
+            // int rc = nn_recv (s, buf, len, flags);
+            
+            REDLOG("[BEGIN RECV]\n");
+            int res = static_cast<int>(m_poll_recv_cq_with_data_once(&ibv_res, 0));
+            REDLOG("[END RECV]%d\n", res);
+
+            if (res != -1) m_post_recv(&ibv_res, rdma_recv_buffer, NN_STATIC_SIZE, 0);
+
+            *(char **)buf_ptr = rdma_recv_buffer;
+
+            return res;
+        }
+        // inline int recv (void **buf_ptr, size_t len, int flags)
+        // {
+        //     // int rc = nn_recv (s, buf, len, flags);
+            
+        //     REDLOG("[BEGIN RECV]\n");
+        //     int res = static_cast<int>(m_poll_recv_cq_with_data(&ibv_res, 0));
+        //     REDLOG("[END RECV]%d\n", res);
+
+        //     m_post_recv(&ibv_res, rdma_recv_buffer, NN_STATIC_SIZE, 0);
+
+        //     *(char **)buf_ptr = rdma_recv_buffer;
+
+        //     return res;
+        // }
+
+#endif
 /*        inline int sendmsg (const struct nn_msghdr *msghdr, int flags)
         {
             int rc = nn_sendmsg (s, msghdr, flags);

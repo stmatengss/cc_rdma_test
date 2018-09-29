@@ -1500,6 +1500,13 @@ m_poll_send_cq(struct m_ibv_res *ibv_res, int qp_index) {
 }
 
 static forceinline void
+m_poll_send_cq_once(struct m_ibv_res *ibv_res, int qp_index) {
+	struct ibv_wc *wcs = (struct ibv_wc *)malloc(sizeof(10));
+	
+	ibv_poll_cq(ibv_res->send_cq[qp_index], 10, &wcs[0]);
+}
+
+static forceinline void
 m_poll_send_cq_multi(struct m_ibv_res *ibv_res, int number, int qp_index) {
 	struct ibv_wc *wcs = (struct ibv_wc *)malloc(sizeof(number));
 	int counter = 0;
@@ -1628,6 +1635,17 @@ m_poll_recv_cq_with_data(struct m_ibv_res *ibv_res, int qp_index) {
 		exit(1);
 	}
 	return wc.imm_data;
+}
+
+static forceinline uint64_t
+m_poll_recv_cq_with_data_once(struct m_ibv_res *ibv_res, int qp_index) {
+	struct ibv_wc wc;
+	int res = ibv_poll_cq(ibv_res->recv_cq[qp_index], 1, &wc);
+	if (res == 1) {
+		return wc.imm_data;
+	} else {
+		return -1;
+	}
 }
 
 static forceinline void
