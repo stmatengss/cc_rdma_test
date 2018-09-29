@@ -314,8 +314,12 @@ enum TsType {R_REQ = 0, W_REQ, P_REQ, XP_REQ};
 #define GET_PART_ID(t,n)	(n*g_thread_cnt + t) 
 */
 
+
 #define MSG(str, args...) { \
-	printf("[%s : %d] " str, __FILE__, __LINE__, args); } \
+  printf("[%s : %d] " str, __FILE__, __LINE__, args); } \
+
+#define forceinline   inline __attribute__((always_inline))
+
 //	printf(args); }
 
 // principal index structure. The workload may decide to use a different 

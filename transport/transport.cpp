@@ -288,25 +288,25 @@ void Transport::init() {
 
   REDLOG("/******** EVERYTHING IS OK ********/\n");
 
-  for (auto &socket: send_sockets) {
-    REDLOG("[%d -> %d]\n", socket.first.first, socket.first.second);
-    socket.second->sock.print_pair_info_local();
-    socket.second->sock.print_pair_info_remote();
-  }
-  for (auto &socket: recv_sockets) {
-    // REDLOG("[%d -> %d]\n", socket.first.first, socket.first.second);
-    socket->sock.print_pair_info_local();
-    socket->sock.print_pair_info_remote();
-  }
+  // for (auto &socket: send_sockets) {
+  //   REDLOG("[%d -> %d]\n", socket.first.first, socket.first.second);
+  //   socket.second->sock.print_pair_info_local();
+  //   socket.second->sock.print_pair_info_remote();
+  // }
+  // for (auto &socket: recv_sockets) {
+  //   // REDLOG("[%d -> %d]\n", socket.first.first, socket.first.second);
+  //   socket->sock.print_pair_info_local();
+  //   socket->sock.print_pair_info_remote();
+  // }
   
-  for (auto &socket: send_sockets) {
-    void * buf = socket.second->sock.get_send_buffer_addr();
-    socket.second->sock.write(buf, 32, 0);
-  }
+  // for (auto &socket: send_sockets) {
+  //   void * buf = socket.second->sock.get_send_buffer_addr();
+  //   socket.second->sock.write(buf, 32, 0);
+  // }
 
-  for (auto &socket: send_sockets) {
-    printf("%s\n", (char *)(socket.second->sock.get_recv_buffer_addr()));
-  }
+  // for (auto &socket: send_sockets) {
+  //   printf("%s\n", (char *)(socket.second->sock.get_recv_buffer_addr()));
+  // }
 
 
   // sleep(2);
@@ -379,7 +379,7 @@ void Transport::init() {
 void Transport::send_msg(uint64_t send_thread_id, uint64_t dest_node_id, void * sbuf,int size) {
   uint64_t starttime = get_sys_clock();
 
-  REDLOG("[Send_Size]%d\n", size);
+  // REDLOG("[Send_Size]%d\n", size);
 
   Socket * socket = send_sockets.find(std::make_pair(dest_node_id,send_thread_id))->second;
   // Copy messages to nanomsg buffer
@@ -394,7 +394,7 @@ void Transport::send_msg(uint64_t send_thread_id, uint64_t dest_node_id, void * 
   int rc = -1;
   while(rc < 0 && (!simulation->is_setup_done() || (simulation->is_setup_done() && !simulation->is_done()))) {
 #ifdef USE_RDMA
-    rc= socket->sock.send(buf,NN_MSG,NN_DONTWAIT);
+    rc= socket->sock.send(buf,size,NN_DONTWAIT);
 #else
     rc= socket->sock.send(&buf,NN_MSG,NN_DONTWAIT);
 #endif
@@ -434,7 +434,7 @@ std::vector<Message*> * Transport::recv_msg(uint64_t thd_id) {
 		bytes = socket->sock.recv(&buf, NN_MSG, NN_DONTWAIT);
 
 #ifdef USE_RDMA
-    GREENLOG("[Recv_Size]%d\n", bytes);
+    // GREENLOG("[Recv_Size]%d\n", bytes);
 #endif
     //++ctr;
     ctr = (ctr + g_this_rem_thread_cnt);

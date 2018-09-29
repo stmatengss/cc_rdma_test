@@ -36,6 +36,7 @@ std::vector<Message*> * Message::create_messages(char * buf) {
   COPY_VAL(dest_id,data,ptr);
   COPY_VAL(return_id,data,ptr);
   COPY_VAL(txn_cnt,data,ptr);
+  printf("[DEST_ID]%d\n", dest_id);
   assert(dest_id == g_node_id);
   assert(return_id != g_node_id);
   assert(ISCLIENTN(return_id) || ISSERVERN(return_id) || ISREPLICAN(return_id));

@@ -45,6 +45,24 @@ extern "C"{
 
 #define NN_STATIC_SIZE 512
 
+forceinline void PRINT_BINARY_CHAR(char num) {
+  for (int i = 0; i < 8; i ++ ) {
+    if(num & (1<<(7-i)))
+      printf("1");
+    else 
+      printf("0");
+  }
+  printf("\n");
+}
+
+#define mem_dump(x, n) do { \
+  printf("[MEM_DUMP]%p\n", x); \
+  for (int i = 0; i < n; i ++ ) { \
+    printf("<%d>\t", i); \
+    PRINT_BINARY_CHAR(*(x + i)); \
+  } \
+} while(0);
+
 namespace nn
 {
     class socket
@@ -55,6 +73,11 @@ namespace nn
         {
             // First Step, 7000 will be changed soon
             // In this version, the qp number is only 1
+            buffer_counter_s = 0;
+            buffer_counter_r = 0;
+            buffer_counter_post = 0;
+            buffer_counter_max = RDMA_BUFFER_SIZE / 2 / NN_STATIC_SIZE;
+
             FILL(ibv_res);
 
             m_init_parameter(&ibv_res, 1, 7000, 0xdeadbeaf, M_RC, 1);
@@ -98,7 +121,7 @@ namespace nn
 
         inline void *get_send_buffer_addr() 
         {
-            return (void *)rdma_send_buffer;
+            return (void *)(rdma_send_buffer + buffer_counter_s * NN_STATIC_SIZE);
         }
 
         inline void *get_recv_buffer_addr() 
@@ -118,7 +141,11 @@ namespace nn
             ibv_res.is_server = 1;
             m_sync(&ibv_res, "", rdma_buffer);
 
-            m_post_multi_recv(&ibv_res, rdma_recv_buffer, NN_STATIC_SIZE, RDMA_CYC_QP_NUM - 1, 0);
+            // m_post_multi_recv(&ibv_res, rdma_recv_buffer, NN_STATIC_SIZE, RDMA_CYC_QP_NUM - 1, 0);
+            for (int i = 0; i < 1000; i ++ ) {
+                m_post_recv(&ibv_res, rdma_recv_buffer + i * NN_STATIC_SIZE, NN_STATIC_SIZE, 0);
+                incre_counter_post();
+            }
 
             m_modify_qp_to_rts_and_rtr(&ibv_res);
 
@@ -131,7 +158,11 @@ namespace nn
             ibv_res.is_server = 0;
             m_sync(&ibv_res, addr, rdma_buffer);
 
-            m_post_multi_recv(&ibv_res, rdma_recv_buffer, NN_STATIC_SIZE, RDMA_CYC_QP_NUM - 1, 0);
+            // m_post_multi_recv(&ibv_res, rdma_recv_buffer, NN_STATIC_SIZE, RDMA_CYC_QP_NUM - 1, 0);
+            for (int i = 0; i < 1000; i ++ ) {
+                m_post_recv(&ibv_res, rdma_recv_buffer + i * NN_STATIC_SIZE, NN_STATIC_SIZE, 0);
+                incre_counter_post();
+            }
 
             m_modify_qp_to_rts_and_rtr(&ibv_res);
 
@@ -166,10 +197,12 @@ namespace nn
         {
             // m_nano_sleep(100000000);
             REDLOG("[BEGIN SEND]\n");
-            m_post_send_imm(&ibv_res, (char *)buf, NN_STATIC_SIZE, len, 0);
+            m_post_send_imm(&ibv_res, (char *)buf, NN_STATIC_SIZE, (uint64_t)len, 0);
             // m_poll_send_cq_once(&ibv_res, 0);
             m_poll_send_cq(&ibv_res, 0);
-            REDLOG("[END SEND]\n");
+            REDLOG("[END SEND]%d:%d\n", len, buffer_counter_s);
+            // mem_dump((char *)buf, (int)len);
+            incre_counter_s();
             return 0;
         }
 
@@ -193,12 +226,14 @@ namespace nn
             
             REDLOG("[BEGIN RECV]\n");
             int res = static_cast<int>(m_poll_recv_cq_with_data(&ibv_res, 0));
-            REDLOG("[END RECV]%d\n", res);
+            REDLOG("[END RECV]%d:%d\n", res, buffer_counter_r);
+            *(char **)buf_ptr = rdma_recv_buffer + buffer_counter_r * NN_STATIC_SIZE;
+            // mem_dump(*(char **)buf_ptr + buffer_counter_s * NN_STATIC_SIZE, (int)len);
 
-            m_post_recv(&ibv_res, rdma_recv_buffer, NN_STATIC_SIZE, 0);
+            m_post_recv(&ibv_res, rdma_recv_buffer + buffer_counter_post * NN_STATIC_SIZE, NN_STATIC_SIZE, 0);
 
-            *(char **)buf_ptr = rdma_recv_buffer;
-
+            incre_counter_r();
+            incre_counter_post();
             return res;
         }
 
@@ -228,12 +263,25 @@ namespace nn
     private:
 
         int s;
+        int buffer_counter_r;
+        int buffer_counter_s;
+        int buffer_counter_post;
+        int buffer_counter_max;
         m_ibv_res ibv_res; 
         char *rdma_buffer;
         char *rdma_send_buffer;
         char *rdma_recv_buffer;
 
         /*  Prevent making copies of the socket by accident. */
+        inline void incre_counter_r() {
+            buffer_counter_r = (buffer_counter_r + 1) % buffer_counter_max;
+        }
+        inline void incre_counter_s() {
+            buffer_counter_s = (buffer_counter_s + 1) % buffer_counter_max;
+        }
+        inline void incre_counter_post() {
+            buffer_counter_post = (buffer_counter_post + 1) % buffer_counter_max;
+        }
         socket (const socket&);
         void operator = (const socket&);
     };
