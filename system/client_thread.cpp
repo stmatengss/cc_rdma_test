@@ -54,7 +54,11 @@ RC ClientThread::run() {
 
 	run_starttime = get_sys_clock();
 
+#ifdef USE_RDMA
   while(!simulation->is_done()) {
+#else
+  while(!simulation->is_done()) {
+#endif
     heartbeat();
 #if SERVER_GENERATE_QUERIES
     break;

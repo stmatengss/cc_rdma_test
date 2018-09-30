@@ -90,6 +90,25 @@ void Thread::progress_stats() {
 #else
       uint64_t now_time = get_wall_clock();
 #endif
+
+#ifdef USE_RDMA__
+      if (ISCLIENT) {      
+        if (now_time - prog_time >= g_prog_timer) {
+          prog_time = now_time;
+          SET_STATS(get_thd_id(), total_runtime, prog_time - simulation->run_starttime); 
+
+          stats.print_client(true);
+        }
+      } else {      
+        if (now_time - prog_time >= g_prog_timer - 100000) {
+
+          prog_time = now_time;
+          SET_STATS(get_thd_id(), total_runtime, prog_time - simulation->run_starttime); 
+
+          stats.print(true);
+        }
+      }
+#else
       if (now_time - prog_time >= g_prog_timer) {
         prog_time = now_time;
         SET_STATS(get_thd_id(), total_runtime, prog_time - simulation->run_starttime); 
@@ -100,6 +119,7 @@ void Thread::progress_stats() {
           stats.print(true);
         }
       }
+#endif
 		}
 
 }

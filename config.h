@@ -113,7 +113,7 @@
 // Concurrency Control
 /***********************************************/
 // WAIT_DIE, NO_WAIT, TIMESTAMP, MVCC, CALVIN, MAAT
-#define CC_ALG TIMESTAMP
+#define CC_ALG MAAT
 #define ISOLATION_LEVEL SERIALIZABLE
 #define YCSB_ABORT_MODE false
 
@@ -358,12 +358,15 @@ enum PPSTxnType {PPS_ALL = 0,
 #define BILLION 1000000000UL // in ns => 1 second
 #define MILLION 1000000UL // in ns => 1 second
 #define STAT_ARR_SIZE 1024
-#define PROG_TIMER 10 * BILLION // in s
+// #define PROG_TIMER 10 * BILLION // in s
+#define PROG_TIMER 10000000 // in s
 #define BATCH_TIMER 0
 #define SEQ_BATCH_TIMER 5 * 1 * MILLION // ~5ms -- same as CALVIN paper
 // #define DONE_TIMER 1 * 60 * BILLION // ~1 minutes @mateng
 // #define WARMUP_TIMER 1 * 60 * BILLION // ~1 minutes @mateng
+// #define DONE_TIMER 1000000000 // ~1 minutes @mateng
 #define DONE_TIMER 100000000 // ~1 minutes @mateng
+// #define WARMUP_TIMER 1000000000 // ~1 minutes @mateng
 #define WARMUP_TIMER 100000000 // ~1 minutes @mateng
 
 #define SEED 0
