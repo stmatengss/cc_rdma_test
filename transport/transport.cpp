@@ -187,9 +187,8 @@ Socket * Transport::connect(uint64_t dest_id,uint64_t port_id) {
 void Transport::init() {
   _sock_cnt = get_socket_count();
 
-  system("memcached -l 0.0.0.0 -p 10086 &");
-
   // m_nano_sleep(500000000);
+#define USE_IPC_SYNC
 
 #ifdef USE_IPC_SYNC
   sig_sync::IPCLock ipc = sig_sync::IPCLock(g_total_node_cnt);
@@ -239,7 +238,7 @@ void Transport::init() {
     }
   }
 
-#ifdef USE_IPC_SYNC
+#ifdef USE_IPC_SYNC_
   ipc.incre();
   ipc.wait();
   if (g_node_id == 0) {
@@ -286,7 +285,7 @@ void Transport::init() {
     th.join();
   }
 
-#ifdef USE_IPC_SYNC
+#ifdef USE_IPC_SYNC_
   ipc.incre();
   ipc.wait();
 #endif

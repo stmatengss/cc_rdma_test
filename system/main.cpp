@@ -62,6 +62,7 @@ int main(int argc, char* argv[])
 
 #ifdef USE_RDMA
   if(g_node_id == 0) {
+    printf("[Memcached Begin Listen]\n");
     system("memcached -l 0.0.0.0 -p 10086 &");  
   }
 #endif

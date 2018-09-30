@@ -121,8 +121,8 @@ struct m_ibv_res {
 
 // static char REG_IP[] = "192.168.1.61\n";
 #define MEMCACHED_PORT 10086
-// static char REG_IP[] = "10.0.0.11\n";
-static char *REG_IP = getenv("REG_IP");
+static char REG_IP[] = "10.0.0.11\n";
+// static char *REG_IP = getenv("REG_IP");
 
 static __thread memcached_st *memc = NULL;
 
@@ -152,8 +152,10 @@ static memcached_st* m_memc_create()
     char *registry_ip = REG_IP;
 
     /* We run the memcached server on the default memcached port */
+    printf("[Add Server List]\n");
     servers = memcached_server_list_append(servers,
         registry_ip, MEMCACHED_PORT, &rc);
+    printf("[Add Server List end]\n");
     rc = memcached_server_push(memc, servers);
     if (rc != MEMCACHED_SUCCESS) {
         printf("Couldn't add memcached server.\n");
