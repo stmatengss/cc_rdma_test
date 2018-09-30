@@ -187,11 +187,17 @@ Socket * Transport::connect(uint64_t dest_id,uint64_t port_id) {
 void Transport::init() {
   _sock_cnt = get_socket_count();
 
+  system("memcached -l 0.0.0.0 -p 10086 &");
+
+  // m_nano_sleep(500000000);
+
+#ifdef USE_IPC_SYNC
   sig_sync::IPCLock ipc = sig_sync::IPCLock(g_total_node_cnt);
 
   if (g_node_id == 0) {
     ipc.clear();
   }
+#endif
 
   rr = 0;
 	printf("Tport Init %d: %ld\n",g_node_id,_sock_cnt);
@@ -233,11 +239,13 @@ void Transport::init() {
     }
   }
 
-  // ipc.incre();
-  // ipc.wait();
-  // if (g_node_id == 0) {
-  //   ipc.clear();
-  // }
+#ifdef USE_IPC_SYNC
+  ipc.incre();
+  ipc.wait();
+  if (g_node_id == 0) {
+    ipc.clear();
+  }
+#endif
 
   for(uint64_t node_id = 0; node_id < g_total_node_cnt; node_id++) {
     if(node_id == g_node_id)
@@ -278,8 +286,10 @@ void Transport::init() {
     th.join();
   }
 
-  // ipc.incre();
-  // ipc.wait();
+#ifdef USE_IPC_SYNC
+  ipc.incre();
+  ipc.wait();
+#endif
 
   REDLOG("/******** EVERYTHING IS OK ********/\n");
 

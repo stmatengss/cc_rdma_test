@@ -54,6 +54,7 @@ uint64_t get_part_id(void * addr) {
 /************************************************/
 void REDLOG(const char *format, ...)
 { 
+#ifdef RDMA_COLOR_LOG
   va_list args;
 
   char buf1[1000], buf2[1000];
@@ -67,10 +68,12 @@ void REDLOG(const char *format, ...)
   printf("%s", buf2);
   //write(2, buf2, 1000);
     va_end( args );
+#endif
 }
 
 void GREENLOG(const char *format, ...)
 { 
+#ifdef RDMA_COLOR_LOG
   va_list args;
 
   char buf1[1000], buf2[1000];
@@ -84,6 +87,7 @@ void GREENLOG(const char *format, ...)
   printf("%s", buf2);
   //write(2, buf2, 1000);
     va_end( args );
+#endif
 }
 
 uint64_t key_to_part(uint64_t key) {

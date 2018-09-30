@@ -59,6 +59,12 @@ void parser(int argc, char * argv[]);
 
 int main(int argc, char* argv[])
 {
+
+#ifdef USE_RDMA
+  if(g_node_id == 0) {
+    system("memcached -l 0.0.0.0 -p 10086 &");  
+  }
+#endif
 	// 0. initialize global data structure
 	parser(argc, argv);
 #if SEED != 0
@@ -325,6 +331,12 @@ int main(int argc, char* argv[])
   // Free things
 	//tport_man.shutdown();
   m_wl->index_delete_all();
+
+#ifdef USE_RDMA
+  if(g_node_id == 0) {
+    system("killall memcached");  
+  }
+#endif
 
   /*
   txn_table.delete_all();

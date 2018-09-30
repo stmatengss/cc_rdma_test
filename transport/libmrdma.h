@@ -121,7 +121,8 @@ struct m_ibv_res {
 
 // static char REG_IP[] = "192.168.1.61\n";
 #define MEMCACHED_PORT 10086
-static char REG_IP[] = "10.0.0.11\n";
+// static char REG_IP[] = "10.0.0.11\n";
+static char *REG_IP = getenv("REG_IP");
 
 static __thread memcached_st *memc = NULL;
 
