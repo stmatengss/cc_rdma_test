@@ -16,17 +16,17 @@
 // #define NODE_CNT 1
 #define NODE_CNT 1
 // #define THREAD_CNT 4
-#define THREAD_CNT 8
+#define THREAD_CNT 2
 #define REM_THREAD_CNT THREAD_CNT
 #define SEND_THREAD_CNT THREAD_CNT
 // #define CORE_CNT 8
-#define CORE_CNT 4
+#define CORE_CNT 2
 
 // PART_CNT should be at least NODE_CNT
 #define PART_CNT NODE_CNT
 #define CLIENT_NODE_CNT NODE_CNT
 // #define CLIENT_THREAD_CNT 4
-#define CLIENT_THREAD_CNT 4
+#define CLIENT_THREAD_CNT 2
 // #define CLIENT_REM_THREAD_CNT 2
 #define CLIENT_REM_THREAD_CNT 1
 // #define CLIENT_SEND_THREAD_CNT 2
@@ -99,7 +99,9 @@
 #define HEADER_SIZE sizeof(uint32_t)*2 // in bits 
 #define MSG_TIMEOUT 5000000000UL // in ns
 #define NETWORK_TEST false
-#define NETWORK_DELAY_TEST false
+// #define NETWORK_TEST false
+// #define NETWORK_DELAY_TEST false
+#define NETWORK_DELAY_TEST true
 #define NETWORK_DELAY 0UL
 
 #define MAX_QUEUE_LEN NODE_CNT * 2
@@ -359,7 +361,7 @@ enum PPSTxnType {PPS_ALL = 0,
 #define MILLION 1000000UL // in ns => 1 second
 #define STAT_ARR_SIZE 1024
 // #define PROG_TIMER 10 * BILLION // in s
-#define PROG_TIMER 10000000 // in s
+#define PROG_TIMER 40000000 // in s
 #define BATCH_TIMER 0
 #define SEQ_BATCH_TIMER 5 * 1 * MILLION // ~5ms -- same as CALVIN paper
 // #define DONE_TIMER 1 * 60 * BILLION // ~1 minutes @mateng
