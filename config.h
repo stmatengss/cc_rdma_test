@@ -8,6 +8,7 @@
 #define USE_RDMA
 #define RDMA_BUFFER_SIZE (1<<22)
 #define RDMA_CYC_QP_NUM (1<<10)
+#define RDMA_BUFFER_ITEM_SIZE (1<<10)
 // #define RDMA_COLOR_LOG
 
 /***********************************************/
